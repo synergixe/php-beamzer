@@ -1,5 +1,5 @@
 {
-        "name": "isocroft/beamzer",
+  "name": "beamzer/beamzer",
 	"description": "This is a libray that adds cross-browser support for real-time feeds and notifications to web applications in an easy way (using Server-Sent Events (SSE) and COMET technologies only)",
 	"keywords": ["ajax long polling", "server-sent events"],
 	"type": "library",
@@ -8,28 +8,40 @@
 			"name": "Ifeora Okechukwu",
 			"email": "isocroft@gmail.com"
 		}
-        ],
-        "require-dev": {
+   ],
+    "require-dev": {
            "mockery/mockery":"0.9.*",
-           "phpunit/phpunit:"",
-           "sjparkinson/static-review":"0.8.*"
+           "phpunit/phpunit":"0.1.*",
+           "sjparkinson/static-review":""
 	},
+  "require":{
+      "igorw/event-source":"dev-master",
+      "symphony/symphony":"",
+  },
 	"autoload": {
-		"classmap": [
-                   "./src/Beamzer/Cache/Contracts/CacheInterface.php",
-                   "./src/Beamzer/Session/Contracts/SessionInterface.php",
-                   "./src/Beamzer/Session/NativeSession.php",
-                   "./src/Beamzer/Session/IlluminateSession.php",
-		   "./src/Beamzer/Streamer.php"	
-		],
-                "psr-4": {
-                   "Beamzer\\": "src/Beamzer/"
-                }
+    		"classmap": [
+                   "./src/Illuminate/Commmand/LaravelNotificationsCommand.php",
+                   "./src/Illuminate/Commands/.php",
+                   "./src/functions.php"
+    		],
+        "psr-4": {
+               "Beamzer\\": "src/Beamzer/"
+        }
 	},
 	"scripts": {
-		"post-install-cmd": [
-			
-		]
+        "post-create-project-cmd": [
+            "php artisan key:generate"
+        ],
+        "post-install-cmd": [
+            "php artisan make:notification ActivityStream namepsace=App\\",
+            "php bin/beam-script.php stremaer-notification:install"
+        ],
+        "post-update-cmd": [
+            "php artisan dumpautoload"
+        ]
 	},
-	"minimum-stability": "stable"
+	"config":{
+		:true
+	},
+	"minimum-stability":"stable"
 }
