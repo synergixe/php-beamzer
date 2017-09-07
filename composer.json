@@ -1,5 +1,5 @@
 {
-  "name": "beamzer/beamzer",
+  "name": "isocroft/beamzer",
 	"description": "This is a libray that adds cross-browser support for real-time feeds and notifications to web applications in an easy way (using Server-Sent Events (SSE) and COMET technologies only)",
 	"keywords": ["ajax long polling", "server-sent events"],
 	"type": "library",
