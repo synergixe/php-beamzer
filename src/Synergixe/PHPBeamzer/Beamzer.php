@@ -1,11 +1,22 @@
 <?php
 
-namespace Beamzer;
+/**
+ * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
+ *
+ * @version v0.1.1
+ *
+ * @author Ifeora Okechukwu (https://twitter.com/isocroft)
+ *
+ * @license MIT 
+ *
+ */
+
+namespace Synergixe\PHPBeamzer;
 
 use Igorw\EventSource\Stream as Stream;
 use Symfony\Component\HttpFoundation\StreamedResponse as StreamedResponse;
 use Symfony\Component\HttpFoundation\Request as Request;
-use Beamzer\Helpers\CancellableShutdownCallback as CancellableShutdownCallback;
+use Synergixe\PHPBeamzer\Helpers\CancellableShutdownCallback as CancellableShutdownCallback;
 
 class Beamzer {
 
@@ -15,31 +26,43 @@ class Beamzer {
 
         private $source_ops_interval;
 
-        private $this->last_event_id;
+        private $last_event_id;
 
-        public static function createStream(array $options){
+        private $request;
 
-                return new static($options);
+        protected static $instance = NULL;
+
+
+        public static function createStream(Request $request = NULL){
+
+                static::$intance = new static($request);
+
+                return static::$instance;
         }
 
-        private function __construct(array $options){
+        private function __construct(Request $request){
 
-            $this->source_callback = $options['data_source_callback'];
-            $this->source_callback_args = $options['data_source_callback_args'];
-            $this->source_ops_interval = $options['data_source_ops_interval'];
+            $this->request = $request;
+
             $this->last_event_id  = 0;
 
         }
 
-        public function start(){
+        public function settings(array $settings){
 
-            $request = getobject('Illuminate\\Http\\Request');
+        }
+
+        public function start(array $options){
+
+            $this->source_callback = $options['data_source_callback'];
+            $this->source_callback_args = $options['data_source_callback_args'];
+            $this->source_ops_interval = $options['data_source_ops_interval'];
             
-            if($request instanceof Request){
-                if($request->hasHeader('Last-Event-ID')){
-                    $this->last_event_id = $request->header('Last-Event-ID', 0);
+            if($this->request instanceof Request){
+                if($ths->request->hasHeader('Last-Event-ID')){
+                    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
                 }
-                $this->last_event_id = $request->only(array('lastEventId'));
+                $this->last_event_id = $this->request->only(array('lastEventId'));
             }else{
                 ;
             }
@@ -49,9 +72,11 @@ class Beamzer {
             $this->source_callback_args['lastId'] = $this->last_event_id;
 
             $response = new StreamedResponse(array(&$this, 'stream_worker'));
+
 	        foreach ($headers as $name => $value) {
             	$response->headers->set($name, $value);
             }
+            
             return $response;
 
         }

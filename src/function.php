@@ -8,15 +8,6 @@ if(!function_exists('cancel_shutdown_function')){
 	}
 }
 
-if(!function_exists('getobject')){
-	function getobject($resolution_name){
-		if(class_exists($resolution_name)
-		   && is_callable('resolve')){
-			return resolve($resolution_name);
-		}
 
-		return NULL;
-	}
-}
 
 ?>

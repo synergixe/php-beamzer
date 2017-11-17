@@ -1,5 +1,5 @@
 {
-  "name": "isocroft/beamzer",
+  "name": "synergixe/php-beamzer",
 	"description": "This is a libray that adds cross-browser support for real-time feeds and notifications to web applications in an easy way (using Server-Sent Events (SSE) and COMET technologies only)",
 	"keywords": ["ajax long polling", "server-sent events"],
 	"type": "library",
@@ -12,36 +12,40 @@
     "require-dev": {
            "mockery/mockery":"0.9.*",
            "phpunit/phpunit":"0.1.*",
-           "sjparkinson/static-review":""
+           "orchestra/testbench":"3.5.*",
+           "sjparkinson/static-review":"5.2.*"
 	},
   "require":{
+      "php":"^5.4",
+      "illuminate/notifications":"^5.3",
+      "illuminate/support":"^5.1",
       "igorw/event-source":"dev-master",
-      "symphony/symphony":"",
+      "symphony/console":"dev-master",
+      "symphony/http-foundation":"dev-master"
   },
 	"autoload": {
-    		"classmap": [
-                   "./src/Illuminate/Commmand/LaravelNotificationsCommand.php",
-                   "./src/Illuminate/Commands/.php",
-                   "./src/functions.php"
-    		],
-        "psr-4": {
-               "Beamzer\\": "src/Beamzer/"
+    		"psr-4": {
+               "Synergixe\\PHPBeamzer\\": "src/"
         }
 	},
-	"scripts": {
-        "post-create-project-cmd": [
-            "php artisan key:generate"
-        ],
+  "autoload-dev": {
+       "psr-4":{
+            "Synergixe\\PHPBeamzer\\Test\\":"tests"
+       }
+  },
+	"config":{
+		"sort-packages":true
+	},
+	"minimum-stability":"dev",
+  "prefer-stable":true,
+  "scripts": {
+        "tests":"vendor/bin/phpunit",
         "post-install-cmd": [
-            "php artisan make:notification ActivityStream namepsace=App\\",
+            "php artisan make:notification ActivityStream",
             "php bin/beam-script.php stremaer-notification:install"
         ],
         "post-update-cmd": [
             "php artisan dumpautoload"
         ]
-	},
-	"config":{
-		:true
-	},
-	"minimum-stability":"stable"
+  }
 }

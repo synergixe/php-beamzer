@@ -1,10 +1,26 @@
 <?php
 
-namespace Beamzer\Notifications;
+/**
+ * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
+ *
+ * @version v0.1.1
+ *
+ * @author Ifeora Okechukwu (https://twitter.com/isocroft)
+ *
+ * @license MIT 
+ *
+ */
+
+namespace Synergixe\PHPBeamzer\Notifications;
 
 use Illuminate\Notifications\Notification;
 
 class DBPushChannel {
+
+	public function __construct(){
+
+		// code..
+	}	
 
    public function send($notifiable, Notification $notification){
 
@@ -22,7 +38,7 @@ class DBPushChannel {
 	        'deleted_at' => null
 
 	    ]);
-  }
+  	}
 }
 
 ?>

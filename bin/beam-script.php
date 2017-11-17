@@ -1,14 +1,15 @@
 #!/usr/bin/env php
 
 <?php
+
 /*
  * @file 
  *
- * @copyright Copyright (c) 2018 https://twitter.com/isocroft
+ * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @created /01/2018
+ * @created 23/01/2018
  *
- * @license http://github.com/isocroft/baeamzer/blob/master/LICENSE
+ * @license http://github.com/synergixe/baeamzer/blob/master/LICENSE
  */
 
 $included = false;
@@ -36,8 +37,7 @@ if (! $included) {
     exit(1);
 }
 
-use Illuminate\Command\LaravelNotificationOptionsCommand;
-use Illuminate\Command\LaravelNotificationLoadCommand;
+use Synergixe\PHPBeamzer\Commands\LaravelNotificationLoadCommand as LaravelNotificationLoadCommand;
 
 use Symfony\Component\Console\Application;
 
@@ -51,7 +51,6 @@ if(defined('LARAVEL_START')
     or class_exists('Illuminate\Foundation\Application')){
 
     $console->addCommands(array(
-        new LaravelNotificationOptionsCommand(),
         new LaravelNotificationLoadCommand()
     ));
 }else{

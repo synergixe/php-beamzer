@@ -1,15 +1,26 @@
 <?php
 
-namespace Beamzer\Notifications;
+/**
+ * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
+ *
+ * @version v0.1.1
+ *
+ * @author Ifeora Okechukwu (https://twitter.com/isocroft)
+ *
+ * @license MIT 
+ *
+ */
+
+namespace Synergixe\PHPBeamzer\Notifications;
 
 /*use Illuminate\Bus\Queueable;*/
 use Illuminate\Notifications\Notification;
 /*use Illuminate\Contracts\Queue\ShouldQueue;*/
 use Illuminate\Database\Eloquent\Model;
 
-use Beamzer\Notifications\DBPushChannel as DBPushChannel;
+use Synergixe\PHPBeamzer\Notifications\DBPushChannel as DBPushChannel;
 
-class ActivityStream extends Notification /* implements ShouldQueue*/ {
+class ActivityStream extends Notification /*implements ShouldQueue */ {
 
   /*use Queueable;*/
 
