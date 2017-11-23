@@ -70,7 +70,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				];
 			}
 
-			/* In app/Http/Controllers/PostingsController.php */
+			/* In app/Http/Controllers/MessageController.php */
 
 			class MessageController extends Controller {
 
@@ -94,6 +94,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			class User extends Eloquent {
 
 				use Notifiable, Actionable;
+				
+				public function routeNotificationForMail(){
+       
+       					return $this->email;
+    				}
 			}
 			
 
