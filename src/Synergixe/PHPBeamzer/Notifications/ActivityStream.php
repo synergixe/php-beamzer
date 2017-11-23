@@ -52,8 +52,7 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
       'subject' => $this->subject->id,
       'action' => $this->subject->getActionPerformed($this->timestamp),
-      'object' => $this->object->id,
-      'receiver' => $notifiable->id
+      'object' => $this->object->id
 
     ];
   }
