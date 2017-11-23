@@ -38,6 +38,13 @@
 	},
 	"minimum-stability":"dev",
   "prefer-stable":true,
+  "extra": {
+        "laravel": {
+            "providers": [
+                "Synergixe\\PHPBeamzer\\BeamzerServiceProvider"
+            ]
+	}
+  },
   "scripts": {
         "tests":"vendor/bin/phpunit",
         "post-install-cmd": [
