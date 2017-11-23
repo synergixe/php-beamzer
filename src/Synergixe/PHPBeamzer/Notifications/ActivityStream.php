@@ -67,7 +67,7 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
             return  (new MailMessage)->error()
                 ->subject('Notification Subject')
                 ->line('...')
-                ->action('', '')
+                ->action('View Content', $this->object->getUrl())
                   ->line('***');
        }
   }
