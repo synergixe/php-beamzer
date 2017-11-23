@@ -24,14 +24,14 @@ class LaravelNotificationLoadCommand extends Command {
  	 * @var string
 	 */
 
-	protected $signature = 'move-files:notification';
+	protected $signature = 'move:file';
 
 
 	/**
  	 * @var string
 	 */
 
-	protected $description = 'Moving the Beamzer Notification Files';
+	protected $description = 'Moving The PHPBeamzer Notification Files';
 
 	/**
 	 * Execute the console command.
@@ -41,10 +41,14 @@ class LaravelNotificationLoadCommand extends Command {
 
 	public function handle(){
 
-		$file = app_path('Notifications/ActivityStream.php');
+		$this->call('make:listener', ['argument' => 'NotificableEventListener' ,  '--event' => '"Synergixe\PHPBeamzer\Events\NotificableEvent"');
+
+		$file = app_path('Providers/EventServiceProvider.php');
 
 		if(file_exists($file) && is_readable($file)){
-			$this->info('');
+
+			$this->info('Updating Events Service Providers...');
+
 		}
 	}
 

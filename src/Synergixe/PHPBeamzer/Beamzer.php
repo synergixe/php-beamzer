@@ -56,13 +56,14 @@ class Beamzer {
 
             $this->source_callback = $options['data_source_callback'];
             $this->source_callback_args = $options['data_source_callback_args'];
-            $this->source_ops_interval = $options['data_source_ops_interval'];
+            $this->source_ops_interval = $options['data_source_ops_timeout'];
             
             if($this->request instanceof Request){
                 if($ths->request->hasHeader('Last-Event-ID')){
                     $this->last_event_id = $this->request->header('Last-Event-ID', 0);
                 }
                 $this->last_event_id = $this->request->only(array('lastEventId'));
+                $this->request->session()->put('event_id', $this->last_event_id);
             }else{
                 ;
             }
@@ -112,7 +113,7 @@ class Beamzer {
 
                 };
             }else{
-                $call = create_function('$f,$a', "/*set_cookie();\r\nheader('Connection: close');\r\n");
+                $call = create_function('$f,$a', "/*set_cookie();\r\n\r\n");
             }
 
             return $this->register_cancellable_shutdown_function($call, $fn, $arr);

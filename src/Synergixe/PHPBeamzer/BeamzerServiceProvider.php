@@ -65,12 +65,12 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 		$this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 		
-		$this->app->singleton('Beamzer', function($app){
+		$this->app->singleton('Streamer', function($app){
 
 			return Beamzer::createStream($app->request);
 		});
 
-		$this->app->alias('Beamzer', 'beamzer');
+		$this->app->alias('Streamer', 'beamzer');
 
 	}
 

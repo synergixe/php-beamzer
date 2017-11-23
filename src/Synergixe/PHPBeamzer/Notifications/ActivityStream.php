@@ -16,7 +16,7 @@ namespace Synergixe\PHPBeamzer\Notifications;
 /*use Illuminate\Bus\Queueable;*/
 use Illuminate\Notifications\Notification;
 /*use Illuminate\Contracts\Queue\ShouldQueue;*/
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Model;
 
 use Synergixe\PHPBeamzer\Notifications\DBPushChannel as DBPushChannel;
 
@@ -28,11 +28,15 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
   protected $object;
 
-  public function __construct(Model $subject, Model $object){
+  protected $timestamp;
+
+  public function __construct(Model $subject, Model $object, $timestamp){
 
       $this->subject = $subject;
 
       $this->object = $object;
+
+      $this->timestamp = $timestamp;
 
   }
 
@@ -47,10 +51,10 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
     return [
 
-      'subject' => $subject->id,
-      'action' => $subject->getActionPerformed($this->object),
+      'subject' => $this->subject->id,
+      'action' => $this->subject->getActionPerformed($timestamp),
       'object' => $this->object->id,
-      'url' => $this->object->getActionablePath($notifiable, $this->object)
+      'url' => ''
 
     ];
   }

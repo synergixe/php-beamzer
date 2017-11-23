@@ -1,6 +1,6 @@
-﻿# Beamzer
+﻿# PHPBeamzer
 
-This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) and COMET technologies only). It currently supports **Laravel** version 5.2 to 5.5 only. 
+This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4 and 5.5 only. 
 
 ## How to Use
 
@@ -8,19 +8,18 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 		$ composer require synergixe/php-beamzer
 
-		$ php artisan make:event NotificableEvent
-
-		$ php artisan make:listener NotificableEventListener --event="NotificableEvent"
-
 
 ```
 
 ```php
 
 	/* In routes/web.php */
+
 	Route::get('/users/notifications/{id}', 'EventSourceController@getNotifications');
 
+
 	/* In app/Http/Controllers/EventSourceController.php */
+
 	class EventSourceController extends Controller {
 
 			public function __construct(){
@@ -37,71 +36,108 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			}
 
-			public function getNotifications(Request $request, $id, Beamzer $beam){
+			/*
+				The {Streamer} object in injected into the 
+				controller method as a dependency.
+			*/
+
+			public function getNotifications(Request $request, $id, Streamer $stream){
 			    
-			    return $beam->start(
+			    return $stream->start(
 			        array(
 			           'data_source_callback' => array(&$this, 'pullNotificationStream'),
 			           'data_source_ops_timeout' => 3000,
 			           'data_source_callback_args' => array(
 			                    'args' => array($id)
-			            ),
-			           'use_redis' => FALSE
+			            )
 			        )
 			    );
 			}
 
+			/* In app/Providers/EventServiceProvider */
+
+			class EventServiceProvider extends ServiceProvider {
+
+				/**
+				 * The event listener mappings for the application.
+				 *
+				 * @var array
+				 */
+				protected $listen = [
+				    'Synergixe\PHPBeamzer\Events\NotificableEvent' => [
+				        'App\Listeners\NotificableEventListener',
+				    ],
+				];
+			}
+
 			/* In app/Http/Controllers/PostingsController.php */
 
-			class PostingsController extends Controller {
+			class MessageController extends Controller {
 
 				public function __construct(){
 
 					// code goes here...
 				}		
 				
-				public function publishArticle(Request $request) {
+				public function publishMessage(Request $request) {
 
 					$user = \Auth::user();
 
-					Event::fire(NotificableEvent($request->all(), $user));
+					event(new NotificableEvent($user, $request->input('message')));
 				}		
 			}
 
-			/* In app/Events/NotificableEvent.php */
+			/* In app/User.php */
 
-			class NotificableEvent extends Event {
+			use Synergixe\PHPBemazer\Actionable as Actionable;
 
-				public function __construct(){
+			class User extends Eloquent {
 
-					// code goes here...
-				}
-
-				public function broadcastOn(){
-
-					return [];
-				}
+				use Notifiable, Actionable;
 			}
+			
 
 			/*In app/Listeners/NotificableEventListener.php */
 
 			class NotificableEventListener implements ShouldQueue {
 
+				use InteractsWithQueue;
+
 				public function __construct(){
 
 					// code goes here...
 				}
 
-				public function handle(NotificableEvent $event){
+				public function handle(Synergixe\PHPBeamzer\Events\NotificableEvent $event){
 
-					$user->followers()->get()->each(function($user, $key) use ($event){
-						$user->notify(
-				        	new ActivityStream($event->producer->setActionPerformed('paid'), $event->content)
+					/* 
+						The below code assumes that the {User} model has a 
+						relationship called {followers} -> e.g. could be
+						followers of a user on a social platform.
+
+						So, all follwers are notified using beamzers'
+						custom notification {ActivityStream} with an
+						action 'paid'.
+					*/
+
+					$user->followers()->get()->each(function($target, $key) use ($event) {
+						$target->notify(
+				        	new ActivityStream(
+				        		$event->producer->setActionPerformed('paid', $event->timing),
+				        		$event->payload,
+				        		$event->timing
+				        	)
 					    )->delay(
-					        Carbon::now()->addMinutes(10);
+					        Carbon::now()->addMinutes(5);
 					    );
 					});
 				}
+
+				public function failed(Synergixe\PHPBeamzer\Events\NotificableEvent $event, $exception){
+
+			        // code goes here...
+
+			    }
 			}
 
 ```
@@ -110,7 +146,16 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 MIT
 
+## Support
 
-## Addendum
+It isn't absolutely necessary but you can use this library with its front end component library called [beamzer-client](https://github.com/isocroft/beamzer-client/). This front end library support the follwoing browsers:
 
-I will be adding support on the client side with a simple JavaScript wrapper library called **BeamzerClient**. This library will depend on a polyfill for SSE (window.EventSource) maintained at this [repository](https://github.com/amvtek/EventSource/). Make sure you have the script at [this repository](https://github.com/isocroft/beamzer-client/) (**BeamzerClient**) before you use beamzer. This is because **Beamzer** and **BeamzerClient** work hand-in-hand.   
+- IE 8.0+
+- FF 4.0+
+- Opera 10.5+
+- Chrome 3.0+
+- Safari 5.0+
+
+## Contributing
+
+You can contribute to this project by setting up a **DOCS** section or sending in a **PR**. report bugs and feature requests to the [issue tracker](https://github.com/synergixe/php-beamzer/issues)    
