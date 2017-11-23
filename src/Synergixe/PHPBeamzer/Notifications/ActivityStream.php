@@ -17,8 +17,7 @@ namespace Synergixe\PHPBeamzer\Notifications;
 use Illuminate\Notifications\Notification;
 /*use Illuminate\Contracts\Queue\ShouldQueue;*/
 use Illuminate\Database\Eloquent\Model as Model;
-
-use Synergixe\PHPBeamzer\Notifications\DBPushChannel as DBPushChannel;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class ActivityStream extends Notification /*implements ShouldQueue */ {
 
