@@ -83,7 +83,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 					$user = \Auth::user();
 
-					event(new NotificableEvent($user, $request->input('message')));
+					event(new Synergixe\PHPBeamzer\Events\NotificableEvent($user, $request->input('message')));
 				}		
 			}
 
@@ -135,9 +135,9 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 				public function failed(Synergixe\PHPBeamzer\Events\NotificableEvent $event, $exception){
 
-			        // code goes here...
+			        	// code goes here...
 
-			    }
+			    	}
 			}
 
 ```
