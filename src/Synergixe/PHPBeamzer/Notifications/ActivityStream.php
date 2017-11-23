@@ -51,9 +51,9 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
     return [
 
       'subject' => $this->subject->id,
-      'action' => $this->subject->getActionPerformed($timestamp),
+      'action' => $this->subject->getActionPerformed($this->timestamp),
       'object' => $this->object->id,
-      'url' => ''
+      'receiver' => $notifiable->id
 
     ];
   }
@@ -66,7 +66,9 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
        }else{
             return  (new MailMessage)->error()
                 ->subject('Notification Subject')
-                ->line('...');;
+                ->line('...')
+                ->action('', '')
+                  ->line('***');
        }
   }
 }
