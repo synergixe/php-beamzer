@@ -105,12 +105,14 @@ class Beamzer {
                     $sourceData = call_user_func_array($fn, $arr['args']);
 		
 		    $sourceData = method_exists($sourceData, 'toArray')? $sourceData->toArray() : $sourceData;
+		
+		    if(!is_array($sourceData)){
+		    	;
+		    }
+		
+		    $chunks = array_chunk($sourceData, 4, true);
 
                     $stream = new Stream();
-
-                    if($a['is_ie']){
-                        $stream->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
-                    }
 
                     if(count($sourceData)) === 0){
                         return $stream->setRetry(2000);
@@ -122,7 +124,15 @@ class Beamzer {
 		
 		    while (TRUE) {
 			 
+			    if(connection_aborted()){
+				 exit();
+			    }
+			    
 			    $event = $stream->event();
+			    
+			    if($a['is_ie']){
+				$event->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
+			    }
 			    
 			    if(!empty($sets['as_event'])){
                                 $event->setEvent($sets['as_event'])
