@@ -26,11 +26,11 @@ class Beamzer {
 
         private $source_ops_interval;
 
-        private $last_event_id;
+        private $req_count;
 
         private $request;
 	
-	private $settings = array('as_event' => '', 'as_json' => TRUE);
+	private $settings = array('as_event' => '', 'ignore_id' => FALSE);
 
         protected static $instance = NULL;
 
@@ -46,11 +46,11 @@ class Beamzer {
 
             $this->request = $request;
 
-            $this->last_event_id = 0;
+            $this->req_count = 0;
 
         }
 
-        public function settings(array $settings){
+        public function setup(array $settings){
 
 		$this->settings = array_merge($this->settings, $settings);
         }
@@ -64,7 +64,7 @@ class Beamzer {
             if($this->request instanceof Request){
 		 $ua = $this->request->headers->get('User-Agent');
 		 if(preg_match('/MSIE/', $ua)){
-		      // $this->request->query->add(['is_ie' => TRUE]);
+		      // $this->request->query->add(['lastEventId' => '']);
 		      $this->source_callback_args['is_ie'] = TRUE;
 		 }   
                 /*
@@ -74,20 +74,28 @@ class Beamzer {
 			    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
 			}
 		*/
-		if($this->request->getSession()->get('beamzer:event_id') !== 0){
+		
 			$this->last_event_id = $this->request->headers->get('LAST_EVENT_ID');
+			
 			if(!isset($this->last_event_id)){
 				$this->last_event_id = $this->request->query->('lastEventId');
 			}
-		}
-                $this->request->getSession()->put('beamzer:event_id', $this->last_event_id);
+		    
+		    	$count = intval($this->request->getSession()->get('beamzer:request_count'));
+			
+		    	if(!isset($count)){
+				$count = 1;
+			}else{
+				++$count;
+			}
+		    
+		    	$this->req_count = $count;
+		    	$this->request->getSession()->put('beamzer:request_count', $this->req_count);
             }else{
                 @trigger_error('Symphony Request object is required to initialize');
             }
 
             $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
-
-            $this->source_callback_args['next_id'] = $this->last_event_id + 1;
 
             $response = new StreamedResponse(array(&$this, 'stream_worker'));
 
@@ -110,17 +118,24 @@ class Beamzer {
 		    	;
 		    }
 		
-		    $chunks = array_chunk($sourceData, 4, true);
+		    $data = array_map("normalize_laravel_notifications", $sourceData);
+		
+		    $chunks = array_chunk($data, 5, true);
 
                     $stream = new Stream();
 
                     if(count($sourceData)) === 0){
-                        return $stream->setRetry(2000);
-                                     ->end()
-                                        ->flush();
+                        return $stream->setRetry(10000);
+			    		->setData('{"status":"empty"}')
+                                     	->end()
+					->flush();
                     }
 		
-		    $stream->setId($a['next_id']);
+		    $last_item = end($data);
+		
+		    $stream->setId($last_item['nid']);
+		
+		    $this->request->getSession()->put('beamzer:request_count', 0);
 		
 		    while (TRUE) {
 			 
@@ -138,7 +153,7 @@ class Beamzer {
                                 $event->setEvent($sets['as_event'])
 			    }
 			    
-			    $event->setData(($sets['as_json'] ? json_encode($sourceData) : $sourceData);
+			    $event->setData(json_encode(array_shift($chunks)));
             				            
                     }
 		
