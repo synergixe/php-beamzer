@@ -40,7 +40,7 @@
 	"config":{
 		      "sort-packages":true
 	},
-	"minimum-stability":"dev",
+	"minimum-stability":"stable",
   "prefer-stable":true,
   "extra": {
         "laravel": {
@@ -53,8 +53,7 @@
         "tests":"vendor/bin/phpunit",
         "post-install-cmd": [
             	"php bin/beam-script.php",
-		"php artisan vendor:publish --tag=config",
-		"php artisan vendor:publish --tag="
+		"php artisan vendor:publish --tag=config"
         ]
   }
 }
