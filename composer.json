@@ -29,7 +29,7 @@
 			"Synergixe\\PHPBeamzer\\": "src/"
 	    	},
 		"files": [
-		      	"src/helpers.php"
+		      	"src/function.php"
 		]
 	},
   "autoload-dev": {
