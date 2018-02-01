@@ -39,6 +39,14 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
             }
       }
     
+      if(trait_exists('Describable')){
+            $traits = class_uses($object);
+        
+            if(!in_array('Describable', $traits)){
+                @trigger_error('Object must be an object with {Describable} traits');
+            }
+      }
+    
       $this->subject = $subject;
 
       $this->object = $object;
