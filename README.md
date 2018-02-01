@@ -11,6 +11,12 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```
 
+```bash
+
+		$ php artisan make:listener NotificableEventListener
+		$ php artisan make:controller EventSourceController, MessageController
+```
+
 ```php
 
 	/* In routes/web.php */
@@ -27,12 +33,22 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				// code goes here...
 			}
 
-			private function pullNotificationStream($id){
+			private function pullNotificationStream(Request $request, $user){
 
-				 $user = App\User::find($id);
+				 if(!isset($user)){
+				 	return array();
+				 }
 
+				 $last_id = $request->input('lastEventId', NULL);
+				 
+				 if(is_null($last_id)){
+				 
+				 	return $user->unreadNotifications->take(10)->get();
+				 }else{
 
-				 return $user->unreadNotifications;
+				 	return $user->unreadNotifications->where('created_at', '>=', intval($last_id))
+									->take(10)->get();
+				 }
 
 			}
 
@@ -43,12 +59,16 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			public function getNotifications(Request $request, $id, Streamer $stream){
 			    
+			    $stream->setup(array(
+			    	'as_event' => 'activity'
+			    ));
+			    
 			    return $stream->start(
 			        array(
 			           'data_source_callback' => array(&$this, 'pullNotificationStream'),
 			           'data_source_ops_timeout' => 3000,
 			           'data_source_callback_args' => array(
-			                    'args' => array($id)
+			                    'args' => array(App\User::find($id))
 			            )
 			        )
 			    );
@@ -83,7 +103,10 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 					$user = \Auth::user();
 
-					event(new Synergixe\PHPBeamzer\Events\NotificableEvent($user, $request->input('message')));
+					event(new Synergixe\PHPBeamzer\Events\NotificableEvent(
+								$user, 
+								$user->tasks()->where('active', $request->input('fav'))->get()
+					));
 				}		
 			}
 
@@ -93,11 +116,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			class User extends Eloquent {
 
-				use Notifiable, Actionable;
+				use Notifiable, Actionable, Describable;
 				
 				public function routeNotificationForMail(){
        
-       					return $this->email;
+       					return $this->email_address;
     				}
 			}
 			
@@ -150,6 +173,10 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ## License
 
 MIT
+
+## Requirement
+
+PHP 5.4.0 +
 
 ## Support
 
