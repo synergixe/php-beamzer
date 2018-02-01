@@ -140,7 +140,7 @@ class Beamzer {
 		
 		    $last_item = end($data);
 		
-		    $stream->setId($last_item['nid']);
+		    $stream->setId($last_item['timing']);
 		
 		    $this->request->getSession()->put('beamzer:request_count', 0);
 		
