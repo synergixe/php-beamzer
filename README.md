@@ -105,7 +105,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 					event(new Synergixe\PHPBeamzer\Events\NotificableEvent(
 								$user, 
-								$user->tasks()->where('active', $request->input('fav'))->get()
+								$user->tasks()->where('status', $request->input('status'))->get()
 					));
 				}		
 			}
@@ -113,6 +113,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			/* In app/User.php */
 
 			use Synergixe\PHPBemazer\Actionable as Actionable;
+			use Synergixe\PHPBemazer\Describable as Describable;
 
 			class User extends Eloquent {
 
@@ -122,6 +123,14 @@ This is a library that adds cross-browser support for real-time feeds and notifi
        
        					return $this->email_address;
     				}
+				
+				/* Override the `getDescription` method from trait { Describable }
+				
+				public function getDecription(){
+				
+					/* This will be used to describe the subject each time on the client */
+					return $this->first_name;
+				}
 			}
 			
 
