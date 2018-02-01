@@ -49,6 +49,17 @@ class Beamzer {
             $this->req_count = 0;
 
         }
+	
+	protected function getConfig($aspect = ''){
+	
+		$beamzerConfigs = config('beamzer');
+
+		if(array_key_exists($aspect, $beamzerConfigs)){
+			return $beamzerConfigs[$aspect];
+		}
+		
+		return $beamzerConfigs;
+	}
 
         public function setup(array $settings){
 
@@ -56,30 +67,26 @@ class Beamzer {
         }
 
         public function start(array $options){
+		
+	    ignore_user_abort(true);
 
             $this->source_callback = $options['data_source_callback'];
             $this->source_callback_args = $options['data_source_callback_args'];
             $this->source_ops_interval = $options['data_source_ops_timeout'];
             
             if($this->request instanceof Request){
-		 $ua = $this->request->headers->get('User-Agent');
-		 if(preg_match('/MSIE/', $ua)){
-		      // $this->request->query->add(['lastEventId' => '']);
-		      $this->source_callback_args['is_ie'] = TRUE;
-		 }   
-                /*
-			This assumes that the request object is from Laravel only (Illuminate\Http\Request)
-		
-			if($this->request->hasHeader('Last-Event-ID')){
-			    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
+		 
+		    	if($this->getConfig('support_old_ie') === TRUE){
+				
+			    $ua = $this->request->headers->get('User-Agent');
+
+			    if(preg_match('/MSIE/', $ua)){
+
+				 $this->source_callback_args['is_ie'] = TRUE;
+			    }   
+				
 			}
-		*/
-		
-			$this->last_event_id = $this->request->headers->get('LAST_EVENT_ID');
-			
-			if(!isset($this->last_event_id)){
-				$this->last_event_id = $this->request->query->('lastEventId');
-			}
+                
 		    
 		    	$count = intval($this->request->getSession()->get('beamzer:request_count'));
 			
@@ -97,7 +104,7 @@ class Beamzer {
 
             $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
 
-            $response = new StreamedResponse(array(&$this, 'stream_worker'));
+            $response = new StreamedResponse(array(&$this, 'stream_work'));
 
 	    foreach ($headers as $name => $value) {
 
@@ -171,8 +178,6 @@ class Beamzer {
         private function stream_work(){
 
             	set_time_limit( 0 );
-		
-		ignore_user_abort(true);
             
 		$this->run_process($this->source_callback, $this->source_callback_args, $this->settings);
             
