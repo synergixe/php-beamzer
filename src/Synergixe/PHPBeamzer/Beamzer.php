@@ -29,6 +29,8 @@ class Beamzer {
         private $last_event_id;
 
         private $request;
+	
+	private $settings = array('as_event' => '', 'as_json' => TRUE);
 
         protected static $instance = NULL;
 
@@ -44,12 +46,13 @@ class Beamzer {
 
             $this->request = $request;
 
-            $this->last_event_id  = 0;
+            $this->last_event_id = 0;
 
         }
 
         public function settings(array $settings){
 
+		$this->settings = array_merge($this->settings, $settings);
         }
 
         public function start(array $options){
@@ -71,18 +74,20 @@ class Beamzer {
 			    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
 			}
 		*/
-		$this->last_event_id = $this->request->headers->get('LAST_EVENT_ID');
-		if(!isset($this->last_event_id)){
-                	$this->last_event_id = $this->request->query->('lastEventId');
+		if($this->request->getSession()->get('beamzer:event_id') !== 0){
+			$this->last_event_id = $this->request->headers->get('LAST_EVENT_ID');
+			if(!isset($this->last_event_id)){
+				$this->last_event_id = $this->request->query->('lastEventId');
+			}
 		}
-                $this->request->getSession()->put('event_id', $this->last_event_id);
+                $this->request->getSession()->put('beamzer:event_id', $this->last_event_id);
             }else{
                 @trigger_error('Symphony Request object is required to initialize');
             }
 
             $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
 
-            $this->source_callback_args['last_id'] = $this->last_event_id;
+            $this->source_callback_args['next_id'] = $this->last_event_id + 1;
 
             $response = new StreamedResponse(array(&$this, 'stream_worker'));
 
@@ -106,23 +111,25 @@ class Beamzer {
                     }
 
                     if(count($sourceData)) === 0){
-                        $stream->setRetry(2000);
+                        return $stream->setRetry(2000);
                                      ->end()
                                         ->flush();
                     }
+		
+		    foreach ( TRUE ) {
+			 
 
-                        $stream->setId()
-                                ->setEvent($a[''])
+                     $stream->setId($a['next_id'])
+                                ->setEvent()
                                     ->setData($sourceData)
-            				            ->end()
-            				                ->flush();
+            				            
                     }
-
-                };
+		
+		    $tream->end()->flush();
             
-
-            return $this->register_cancellable_shutdown_function($call, $fn, $arr);
         }
+
+	
 
         private function register_cancellable_shutdown_function($callback){
                 
@@ -135,20 +142,12 @@ class Beamzer {
             $sleep =  $this->source_ops_interval - (time());
             $ordinal = NULL;
 
-            while ( TRUE ){
-                 if(time() != $sleep) {
-                    if($ordinal){
-                        cancel_shutdown_function($ordinal);
-                    } 
-                   // the looping will pause on the specific time it was set to sleep
-                   // it will loop again once it finish sleeping.
-                   time_sleep_until($sleep);
-                 }
+            
 
                  #WORK
                  /*echo 'This text will never be seen by the user';*/
                  $ordinal = $this->run_process($this->source_callback, $this->source_callback_args);
-            }
+            
 
         }
 
