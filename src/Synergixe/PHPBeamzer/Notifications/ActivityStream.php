@@ -62,26 +62,30 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
   public function toDatabase($notifiable){
 
     return [ 
-      'subject' => $this->subject->id,
+      'subject' => $this->subject->getDescription(),
       'action' => $this->subject->getActionPerformed($this->timestamp),
-      'object' => $this->object->id
+      'object' => $this->object->getDescription()
 
     ];
   }
 
-  /*public function toMail($notifiable){
-       if($notifiable->notifySuccessful('?')){ 
-    	     return (new MailMessage)->view(
-              'activity.mail', ['object' => $this->object]
-            );
-       }else{
-            return  (new MailMessage)->error()
-                ->subject('Notification Subject')
-                ->line('...')
-                ->action('View Content', $this->object->getUrl())
-                  ->line('***');
-       }
-  }*/
+  /*
+       This will be enabled on the next version
+  
+        public function toMail($notifiable){
+             if($notifiable->notifySuccessful('?')){ 
+                 return (new MailMessage)->view(
+                    'activity.mail', ['object' => $this->object]
+                  );
+             }else{
+                  return  (new MailMessage)->error()
+                      ->subject('Notification Subject')
+                      ->line('...')
+                      ->action('View Content', $this->object->getUrl())
+                        ->line('***');
+             }
+        }
+   */
 }
 
 ?>
