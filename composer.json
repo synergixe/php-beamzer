@@ -25,9 +25,12 @@
           "symphony/http-foundation":"dev-master"
   },
 	"autoload": {
-    		    "psr-4": {
-                "Synergixe\\PHPBeamzer\\": "src/"
-            }
+	   	"psr-4": {
+			"Synergixe\\PHPBeamzer\\": "src/"
+	    	},
+		"files": [
+		      	"src/helpers.php"
+		]
 	},
   "autoload-dev": {
           "psr-4":{
