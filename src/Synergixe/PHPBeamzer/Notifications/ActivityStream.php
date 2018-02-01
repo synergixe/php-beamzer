@@ -31,6 +31,14 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
   public function __construct(Model $subject, Model $object, $timestamp){
 
+      if(trait_exists('Actionable')){
+            $traits = class_uses($subject);
+        
+            if(!in_array('Actionable', $traits)){
+                @trigger_error('Subject must be an object with {Actionable} traits');
+            }
+      }
+    
       $this->subject = $subject;
 
       $this->object = $object;
@@ -41,15 +49,19 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
   public function via($notifiable){
 
-    return isset($notifiable->no_buzz) && $notifiable->no_buzz === TRUE 
+    /*
+        This will be enabled on next version
+    
+        return isset($notifiable->no_buzz) && $notifiable->no_buzz === TRUE 
                       ? [DBPushChannel::class] 
-                      : ['mail', 'database']; // important custom Channel defined here
+                      : ['mail', 'database']; */
+    
+        return ['database'];
   }
 
   public function toDatabase($notifiable){
 
-    return [
-
+    return [ 
       'subject' => $this->subject->id,
       'action' => $this->subject->getActionPerformed($this->timestamp),
       'object' => $this->object->id
@@ -57,7 +69,7 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
     ];
   }
 
-  public function toMail($notifiable){
+  /*public function toMail($notifiable){
        if($notifiable->notifySuccessful('?')){ 
     	     return (new MailMessage)->view(
               'activity.mail', ['object' => $this->object]
@@ -69,7 +81,7 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
                 ->action('View Content', $this->object->getUrl())
                   ->line('***');
        }
-  }
+  }*/
 }
 
 ?>
