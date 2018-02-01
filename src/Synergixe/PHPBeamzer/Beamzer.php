@@ -100,11 +100,13 @@ class Beamzer {
 
         }
 
-        private function run_process($fn, $arr){
+        private function run_process($fn, $arr, $sets){
             
                     $sourceData = call_user_func_array($fn, $arr['args']);
+		
+		    $sourceData = method_exists($sourceData, 'toArray')? $sourceData->toArray() : $sourceData;
 
-                    $stream = (new Stream())->event();
+                    $stream = new Stream();
 
                     if($a['is_ie']){
                         $stream->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
@@ -116,12 +118,17 @@ class Beamzer {
                                         ->flush();
                     }
 		
-		    foreach ( TRUE ) {
+		    $stream->setId($a['next_id']);
+		
+		    while (TRUE) {
 			 
-
-                     $stream->setId($a['next_id'])
-                                ->setEvent()
-                                    ->setData($sourceData)
+			    $event = $stream->event();
+			    
+			    if(!empty($sets['as_event'])){
+                                $event->setEvent($sets['as_event'])
+			    }
+			    
+			    $event->setData(($sets['as_json'] ? json_encode($sourceData) : $sourceData);
             				            
                     }
 		
@@ -138,17 +145,12 @@ class Beamzer {
 
         private function stream_work(){
 
-            set_time_limit( 0 );
-            $sleep =  $this->source_ops_interval - (time());
-            $ordinal = NULL;
-
+            	set_time_limit( 0 );
+		
+		ignore_user_abort(true);
             
-
-                 #WORK
-                 /*echo 'This text will never be seen by the user';*/
-                 $ordinal = $this->run_process($this->source_callback, $this->source_callback_args);
+		$this->run_process($this->source_callback, $this->source_callback_args, $this->settings);
             
-
         }
 
 }
