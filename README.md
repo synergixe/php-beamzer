@@ -124,7 +124,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
        					return $this->email_address;
     				}
 				
-				/* Override the `getDescription` method from trait { Describable }
+				/* Override the `getDescription` method from trait { Describable } */
 				
 				public function getDecription(){
 				
