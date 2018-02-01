@@ -59,42 +59,49 @@ class Beamzer {
             $this->source_ops_interval = $options['data_source_ops_timeout'];
             
             if($this->request instanceof Request){
-                if($ths->request->hasHeader('Last-Event-ID')){
-                    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
-                }
-                $this->last_event_id = $this->request->only(array('lastEventId'));
-                $this->request->session()->put('event_id', $this->last_event_id);
+		 $ua = $this->request->headers->get('User-Agent');
+		 if(preg_match('/MSIE/', $ua)){
+		      // $this->request->query->add(['is_ie' => TRUE]);
+		      $this->source_callback_args['is_ie'] = TRUE;
+		 }   
+                /*
+			This assumes that the request object is from Laravel only (Illuminate\Http\Request)
+		
+			if($this->request->hasHeader('Last-Event-ID')){
+			    $this->last_event_id = $this->request->header('Last-Event-ID', 0);
+			}
+		*/
+		$this->last_event_id = $this->request->headers->get('LAST_EVENT_ID');
+		if(!isset($this->last_event_id)){
+                	$this->last_event_id = $this->request->query->('lastEventId');
+		}
+                $this->request->getSession()->put('event_id', $this->last_event_id);
             }else{
-                ;
+                @trigger_error('Symphony Request object is required to initialize');
             }
 
-            $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive'));
+            $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
 
-            $this->source_callback_args['lastId'] = $this->last_event_id;
+            $this->source_callback_args['last_id'] = $this->last_event_id;
 
             $response = new StreamedResponse(array(&$this, 'stream_worker'));
 
-	        foreach ($headers as $name => $value) {
-            	$response->headers->set($name, $value);
-            }
+	    foreach ($headers as $name => $value) {
+
+		$response->headers->set($name, $value);
+	    }
             
             return $response;
 
         }
 
-        private function bg_process($fn, $arr){
-            if(class_exists('Closure')){
-                $call = function($f, $a){
-                    /*set_cookie();
-                    header('Connection: close');
-                    header('Content-length: 0');
-                    ob_flush();
-                    flush();*/
-                    $sourceData = call_user_func_array($f, $a['args']);
+        private function run_process($fn, $arr){
+            
+                    $sourceData = call_user_func_array($fn, $arr['args']);
 
                     $stream = (new Stream())->event();
 
-                    if($a['isIE']){
+                    if($a['is_ie']){
                         $stream->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
                     }
 
@@ -112,9 +119,7 @@ class Beamzer {
                     }
 
                 };
-            }else{
-                $call = create_function('$f,$a', "/*set_cookie();\r\n\r\n");
-            }
+            
 
             return $this->register_cancellable_shutdown_function($call, $fn, $arr);
         }
@@ -124,7 +129,7 @@ class Beamzer {
                 return new CancellableShutdownCallback(func_get_args());
         }
 
-        private function stream_worker(){
+        private function stream_work(){
 
             set_time_limit( 0 );
             $sleep =  $this->source_ops_interval - (time());
@@ -142,7 +147,7 @@ class Beamzer {
 
                  #WORK
                  /*echo 'This text will never be seen by the user';*/
-                 $ordinal = $this->bg_process($this->source_callback, $this->source_callback_args);
+                 $ordinal = $this->run_process($this->source_callback, $this->source_callback_args);
             }
 
         }
