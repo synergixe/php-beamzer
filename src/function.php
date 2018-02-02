@@ -19,5 +19,11 @@ if(! function_exits('normalize_laravel_notifications') ){
   }
 }
 
+if(! function_exists('config') ){
+	function config ($key) {
+		
+		return "";
+	}
+}
 
 ?>
