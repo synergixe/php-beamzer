@@ -31,11 +31,11 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
 
   public function __construct(Model $subject, Model $object, $timestamp){
 
-      if(trait_exists('Actionable')){
+      if(trait_exists('Actionable') || trait_exists('Describable')){
             $traits = class_uses($subject);
         
-            if(!in_array('Actionable', $traits)){
-                @trigger_error('Subject must be an object with {Actionable} traits');
+            if(!in_array(array('Actionable', 'Describable'), $traits)){
+                @trigger_error('Subject must be an object with {Actionable} and {Describable} traits');
             }
       }
     
@@ -70,9 +70,9 @@ class ActivityStream extends Notification /*implements ShouldQueue */ {
   public function toDatabase($notifiable){
 
     return [ 
-      'subject' => $this->subject->getDescription(),
+      'subject' => $this->subject->getDescription($this->subject->id),
       'action' => $this->subject->getActionPerformed($this->timestamp),
-      'object' => $this->object->getDescription()
+      'object' => $this->object->getDescription($this->object->id)
 
     ];
   }
