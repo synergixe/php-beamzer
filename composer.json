@@ -22,7 +22,7 @@
 	  "illuminate/redis":"^5.4",
 	  "illuminate/database":"^5.4",
           "igorw/event-source":"dev-master",
-          "symphony/console":"dev-master",
+          "illuminate/console":"^5.4",
           "symphony/http-foundation":"dev-master"
   },
 	"autoload": {
