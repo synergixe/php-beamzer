@@ -14,6 +14,7 @@
 namespace Synergixe\PHPBeamzer;
 
 use Igorw\EventSource\Stream as Stream;
+use Illuminate\Redis\Connections\Connection as RedisConnection;
 use Symfony\Component\HttpFoundation\StreamedResponse as StreamedResponse;
 use Symfony\Component\HttpFoundation\Request as Request;
 use Synergixe\PHPBeamzer\Helpers\CancellableShutdownCallback as CancellableShutdownCallback;
@@ -30,21 +31,27 @@ class Beamzer {
 
         private $request;
 	
+	private $redis;
+	
 	private $settings = array('as_event' => '', 'ignore_id' => FALSE);
 
         protected static $instance = NULL;
 
 
-        public static function createStream(Request $request = NULL){
+        public static function createStream(Request $request = NULL, RedisConnection $redis_connection = NULL){
 
-                static::$intance = new static($request);
+                if(is_null(static::$instance)){
+			static::$intance = new static($request, $redis_connection);
+		}
 
                 return static::$instance;
         }
 
-        private function __construct(Request $request){
+        private function __construct(Request $request, RedisConnection $redis){
 
             $this->request = $request;
+		
+	    $this->redis = $redis;
 
             $this->req_count = 0;
 
@@ -114,11 +121,9 @@ class Beamzer {
             return $response;
 
         }
-
-        private function run_process($fn, $arr, $sets){
-            
-                    $sourceData = call_user_func_array($fn, $arr['args']);
-		
+	
+	private function extractData($sourceData, &$chunks){
+	
 		    $sourceData = method_exists($sourceData, 'toArray')? $sourceData->toArray() : $sourceData;
 		
 		    if(!is_array($sourceData)){
@@ -135,6 +140,44 @@ class Beamzer {
 		
 		    $chunks = array_chunk($data, $chunk_size, true);
 		
+		    return $data;
+	}
+	
+	private function onPublish($fn, $arr, $sets){
+		
+		$channel = $this->getConfig('redis_channel');
+		
+		$client = $this->redis->client();
+			
+			// Store in Redis DB for delay
+			# client->set('', );
+		
+		    $stream = new Stream();
+	
+		$this->redis->subscribe([$channel], function($payload) use ($stream){
+			
+			$event = $stream->event();
+			
+		    $event->setId(time());
+			
+			if(!empty($sets['as_event'])){
+                                $event->setEvent($sets['as_event'])
+			    }
+			
+			$event->setData($payload)
+				$event->end()
+					->flush();
+		    
+	}
+
+        private function onEvent($fn, $arr, $sets){
+            
+                    $sourceData = call_user_func_array($fn, $arr['args']);
+		
+		    $chunks = array();
+		
+		    $data = $this->extractData($sourceData, $chunks);
+		
 		    $max_req_count = intval($this->getConfig('retry_limit_count'));
 
                     $stream = new Stream();
@@ -147,8 +190,6 @@ class Beamzer {
                     }
 		
 		    $last_item = end($data);
-		
-		    $stream->setId($last_item['timing']);
 		
 		    if($this->req_count >= $max_req_count){
 			
@@ -163,6 +204,8 @@ class Beamzer {
 			    }
 			    
 			    $event = $stream->event();
+			    
+			    $event->setId($last_item['timing']);
 			    
 			    if($a['is_ie']){
 				$event->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
@@ -182,7 +225,7 @@ class Beamzer {
 
 	
 
-        private function register_cancellable_shutdown_function($callback){
+        private function run_in_background($callback){
                 
                 return new CancellableShutdownCallback(func_get_args());
         }
@@ -190,8 +233,20 @@ class Beamzer {
         private function stream_work(){
 
             	set_time_limit( 0 );
+		
+		$can_use_redis = $this->getConfig('');
             
-		$this->run_process($this->source_callback, $this->source_callback_args, $this->settings);
+		if(is_null($this->redis) 
+		   	&& $can_use_redis){
+			
+			// $this->onEvent($this->source_callback, $this->source_callback_args, $this->settings);
+			
+			$this->run_in_background(array(&$this, 'onEvent'), array($this->source_callback, $this->source_callback_args, $this->settings));
+			
+		}else{
+			
+			$this->onPublish($this->source_callback, $this->source_callback_args, $this->settings);
+		}
             
         }
 
