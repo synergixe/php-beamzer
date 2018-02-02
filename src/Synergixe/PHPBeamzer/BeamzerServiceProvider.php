@@ -14,7 +14,7 @@
 namespace Synergixe\PHPBeamzer;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
-use Synergixe\PHPBeamzer\Coomands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
+use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
 use Illuminate\Support\ServiceProvider;
 
 class BeamzerServiceProvider extends ServiceProvider {
