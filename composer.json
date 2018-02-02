@@ -1,6 +1,6 @@
 {
   "name": "synergixe/php-beamzer",
-	"description": "This is a libray that adds cross-browser support for real-time feeds and notifications to web applications in an easy way (using Server-Sent Events (SSE) and COMET technologies only)",
+	"description": "This is a library that provides support for real-time feeds and notifications for web applications (using Server-Sent Events (SSE) and COMET technologies only)",
 	"keywords": ["ajax long polling", "server-sent events"],
 	"type": "library",
 	"authors": [
@@ -17,9 +17,10 @@
 	},
   "require":{
           "php":"^5.4",
-          "illuminate/notifications":"^5.3",
-          "illuminate/support":"^5.1",
-	  "illuminate/database":"^5.3",
+          "illuminate/notifications":"^5.4",
+          "illuminate/support":"^5.3",
+	  "illuminate/redis":"^5.4",
+	  "illuminate/database":"^5.4",
           "igorw/event-source":"dev-master",
           "symphony/console":"dev-master",
           "symphony/http-foundation":"dev-master"
