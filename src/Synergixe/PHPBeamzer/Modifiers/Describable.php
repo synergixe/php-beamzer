@@ -1,3 +1,13 @@
 <?php
 
-namespace Synergixe\PHPBeamzer\Modifiers;
+  namespace Synergixe\PHPBeamzer\Modifiers;
+
+  trait Describable {
+    
+            public function getDescription($id){
+            
+                  return '';
+            }
+    
+    }
+?>
