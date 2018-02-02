@@ -29,10 +29,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 	/* In routes/web.php */
 
 	Route::get('/users/notifications/{id}', 'EventSourceController@getNotifications');
+	Route::post('/nofify/followers/', 'MessageController@fireNotificationEvent');
 	
 ```
 
-### Setup the Controller for
+### Setup the Controller for read notifications from the DB and return it to PHPBeamzer
 
 ```php
 
@@ -88,6 +89,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			}
 ```
 
+### Setup the EventServiceProvider to Configure Laravel events for Creating Notifications
+
 ```php
 
 			/* In app/Providers/EventServiceProvider */
@@ -105,6 +108,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				    ],
 				];
 			}
+```
+
+### Setup Controller to fire Event when something happens within your Application
+
+```php
 
 			/* In app/Http/Controllers/MessageController.php */
 			
@@ -117,7 +125,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					// code goes here...
 				}		
 				
-				public function publishMessage(Request $request) {
+				public function fireNotificationEvent(Request $request) {
 
 					$user = \Auth::user();
 
@@ -233,6 +241,7 @@ MIT
 ## Requirement
 
 PHP 5.4.0 +
+Redis Server (Optional)
 
 ## Support
 
