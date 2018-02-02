@@ -40,7 +40,7 @@ class Beamzer {
         protected static $instance = NULL;
 
 
-        public static function createStream(Request $request = NULL, RedisConnection $redis_connection = NULL){
+        public static function createInstance(Request $request = NULL, RedisConnection $redis_connection = NULL){
 
                 if(is_null(static::$instance)){
 			static::$intance = new static($request, $redis_connection);
@@ -117,12 +117,12 @@ class Beamzer {
 
             $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
 
-            $response = new StreamedResponse(array(&$this, 'stream_work'));
+            $response = new StreamedResponse(array(&$this, 'stream_work'), 200, $headers);
 
-	    foreach ($headers as $name => $value) {
+	    /*foreach ($headers as $name => $value) {
 
 		$response->headers->set($name, $value);
-	    }
+	    }*/
             
             return $response;
 
