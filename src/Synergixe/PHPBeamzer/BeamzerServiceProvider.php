@@ -86,7 +86,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 			
 			if($redis_config['client'] === 'predis'){
 				
-				$redis = $app['redis.connection'];
+				$redis = $app['redis']->connection();
 			}
 
 			return Beamzer::createStream($app->request, $redis);
