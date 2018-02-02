@@ -19,7 +19,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model as Model;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class ActivityStream extends Notification /*implements ShouldQueue */ {
+class ActivityStreamNotification extends Notification /*implements ShouldQueue */ {
 
   /*use Queueable;*/
 
