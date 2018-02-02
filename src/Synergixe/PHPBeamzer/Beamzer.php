@@ -155,16 +155,23 @@ class Beamzer {
 		
 		$client = $this->redis->client();
 			
-			// @TODO: Store in Redis DB for delay (Redis has a timer that persists data in memory... so we can exploit that)
+			// @TODO: Store in Redis DB for delay (Redis has a timer task that persists data in memory to disk... so we can exploit that)
 			# client->set('', );
 		
 		    $stream = new Stream();
 	
 		$this->redis->subscribe($channel, function($payload) use ($stream){
 			
+			if(connection_aborted()){
+				 if(!is_null($this->cancellable)){   
+				 	cancel_shutdown_function($this->cancellable);
+				 }
+				 exit();
+			 }
+			
 			$event = $stream->event();
 			
-		    $event->setId(time());
+		    	$event->setId(time());
 			
 			if(!empty($sets['as_event'])){
                                 $event->setEvent($sets['as_event'])
