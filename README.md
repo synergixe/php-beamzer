@@ -22,7 +22,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 		$ php artisan make:controller MessageController
 ```
 
-### Register the route for returning your stream notifications 
+### Register the route for returning your stream notifications and for create notifications
 
 ```php
 
@@ -60,7 +60,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				 	return $user->unreadNotifications->take(10)->get();
 				 }else{
 
-				 	return $user->unreadNotifications->where('created_at', '>=', intval($last_id))
+				 	return $user->unreadNotifications->where('created_at', '>=', $last_id)
 									->take(10)->get();
 				 }
 
@@ -71,13 +71,13 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				controller method as a dependency.
 			*/
 
-			public function getNotifications(Request $request, $id, Streamer $stream){
+			public function getNotifications(Request $request, $id, Streamer $streamer){
 			    
-			    $stream->setup(array(
+			    $streamer->setup(array(
 			    	'as_event' => 'activity'
 			    ));
 			    
-			    return $stream->start(
+			    return $streamer->start(
 			        array(
 			           'data_source_callback' => array(&$this, 'pullNotificationStream'),
 			           'data_source_ops_timeout' => 3000,
@@ -163,8 +163,9 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				public function getDecription($id){
 				
 					/* 
-						This can be used to describe the subject/object each time on the client-side 
-						in your notifications list when rendered in HTML
+						This can be used to describe the subject/object each
+						time on the client-side in your notifications
+						 list when rendered in HTML
 					*/
 					return array(
 						'name' => ($this->last_name . " " . $this->first_name),
