@@ -145,7 +145,7 @@ class Beamzer {
 	
 	private function onPublish($fn, $arr, $sets){
 		
-		$channel = $this->getConfig('redis_channel');
+		$channel = $this->getConfig('redis_pub_channel');
 		
 		$client = $this->redis->client();
 			
@@ -154,7 +154,7 @@ class Beamzer {
 		
 		    $stream = new Stream();
 	
-		$this->redis->subscribe([$channel], function($payload) use ($stream){
+		$this->redis->subscribe($channel, function($payload) use ($stream){
 			
 			$event = $stream->event();
 			
@@ -200,6 +200,9 @@ class Beamzer {
 		    while (count($chunks) != 0) {
 			 
 			    if(connection_aborted()){
+				 if(!is_null($this->cancellable)){   
+				 	cancel_shutdown_function($this->cancellable);
+				 }
 				 exit();
 			    }
 			    
@@ -227,14 +230,14 @@ class Beamzer {
 
         private function run_in_background($callback){
                 
-                return new CancellableShutdownCallback(func_get_args());
+                $this->cancellable = new CancellableShutdownCallback(func_get_args());
         }
 
         private function stream_work(){
 
             	set_time_limit( 0 );
 		
-		$can_use_redis = $this->getConfig('');
+		$can_use_redis = $this->getConfig('use_redis');
             
 		if(is_null($this->redis) 
 		   	&& $can_use_redis){
