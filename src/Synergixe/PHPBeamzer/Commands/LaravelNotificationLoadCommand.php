@@ -24,14 +24,14 @@ class LaravelNotificationLoadCommand extends Command {
  	 * @var string
 	 */
 
-	protected $signature = 'move:file';
+	protected $signature = 'create:file';
 
 
 	/**
  	 * @var string
 	 */
 
-	protected $description = 'Moving The PHPBeamzer Notification Files';
+	protected $description = 'Creating The PHPBeamzer Notification Event Files';
 
 	/**
 	 * Execute the console command.
