@@ -4,6 +4,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ## How to Use
 
+### Load Up the package from Composer
+
 ```bash
 
 		$ composer require synergixe/php-beamzer
@@ -11,17 +13,28 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```
 
+### Then create your Controllers
+
 ```bash
 
-		$ php artisan make:listener NotificableEventListener
-		$ php artisan make:controller EventSourceController, MessageController
+		$ php artisan make:controller EventSourceController
+		
+		$ php artisan make:controller MessageController
 ```
+
+### Register the route for returning your stream notifications 
 
 ```php
 
 	/* In routes/web.php */
 
 	Route::get('/users/notifications/{id}', 'EventSourceController@getNotifications');
+	
+```
+
+### Setup the Controller for
+
+```php
 
 
 	/* In app/Http/Controllers/EventSourceController.php */
@@ -73,6 +86,9 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			        )
 			    );
 			}
+```
+
+```php
 
 			/* In app/Providers/EventServiceProvider */
 
@@ -91,6 +107,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			}
 
 			/* In app/Http/Controllers/MessageController.php */
+			
+			use Synergixe\PHPBeamzer\Events\NotificableEvent as NotificableEvent
 
 			class MessageController extends Controller {
 
@@ -103,17 +121,25 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 					$user = \Auth::user();
 
-					event(new Synergixe\PHPBeamzer\Events\NotificableEvent(
-								$user, 
-								$user->tasks()->where('status', $request->input('status'))->get()
+					event(new NotificableEvent(
+						$user, 
+						$user->tasks()->where(
+								'status', 
+								$request->input('status')
+							)->get()
 					));
 				}		
 			}
+```
+
+### Add the Modifier Traits (Actionable, Describable) to the Subject of your Notifications
+
+```php
 
 			/* In app/User.php */
 
-			use Synergixe\PHPBemazer\Actionable as Actionable;
-			use Synergixe\PHPBemazer\Describable as Describable;
+			use Synergixe\PHPBemazer\Modifiers\Actionable as Actionable;
+			use Synergixe\PHPBemazer\Modifiers\Describable as Describable;
 
 			class User extends Eloquent {
 
@@ -126,13 +152,23 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				
 				/* Override the `getDescription` method from trait { Describable } */
 				
-				public function getDecription(){
+				public function getDecription($id){
 				
-					/* This will be used to describe the subject each time on the client */
-					return $this->first_name;
+					/* 
+						This can be used to describe the subject/object each time on the client-side 
+						in your notifications list when rendered in HTML
+					*/
+					return array(
+						'name' => ($this->last_name . " " . $this->first_name),
+						'id' => (is_null($id)? $this->uid : $id)
+					);
 				}
 			}
 			
+```
+### Modify the generated _NotificableEventListener_ to include your own code in the _handle_ method
+
+```php
 
 			/*In app/Listeners/NotificableEventListener.php */
 
@@ -176,6 +212,17 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			    	}
 			}
+
+```
+### On the client-side, setup _beamzer-client JS libary_ like so
+
+```js
+
+<script src=""></script>
+
+<script type="text/javascript">
+
+</script>
 
 ```
 
