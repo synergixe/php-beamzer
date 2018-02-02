@@ -225,7 +225,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ```
 ### On the client-side, setup _beamzer-client JS libary_ like so
 
-```js
+```javascript
 
 <script src=""></script>
 
