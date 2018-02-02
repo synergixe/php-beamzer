@@ -68,7 +68,7 @@ class Beamzer {
 
         public function start(array $options){
 		
-	    ignore_user_abort(true);
+	    ignore_user_abort( true );
 
             $this->source_callback = $options['data_source_callback'];
             $this->source_callback_args = $options['data_source_callback_args'];
@@ -127,13 +127,21 @@ class Beamzer {
 		
 		    $data = array_map("normalize_laravel_notifications", $sourceData);
 		
-		    $chunks = array_chunk($data, 5, true);
+		    $chunk_size = intval($this->getConfig('data_chunks_size'));
+		
+		    if($chunk_size > 10){
+		    	$chunk_size = 10;
+		    }
+		
+		    $chunks = array_chunk($data, $chunk_size, true);
+		
+		    $max_req_count = intval($this->getConfig('retry_limit_count'));
 
                     $stream = new Stream();
 
                     if(count($sourceData)) === 0){
-                        return $stream->setRetry(10000);
-			    		->setData('{"status":"heartbeat"}')
+                        return $stream->setRetry((1000 * $this->req_count));
+			    		->setData('{"heartbeat":true}')
                                      	->end()
 					->flush();
                     }
@@ -142,7 +150,11 @@ class Beamzer {
 		
 		    $stream->setId($last_item['timing']);
 		
-		    $this->request->getSession()->put('beamzer:request_count', 0);
+		    if($this->req_count >= $max_req_count){
+			
+			$this->req_count = 0;
+		    	$this->request->getSession()->put('beamzer:request_count', $this->req_count);
+		    }
 		
 		    while (count($chunks) != 0) {
 			 
@@ -164,7 +176,7 @@ class Beamzer {
             				            
                     }
 		
-		    $tream->end()->flush();
+		    $stream->end()->flush();
             
         }
 
