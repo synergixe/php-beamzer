@@ -8,7 +8,7 @@ return [
 	
 	'retry_limit_count' => 10,
 	
-	'use_redis_pubsub' => FALSE,
+	'use_redis' => FALSE,
 	
 	'redis_pub_channel' => 'notifications',
 	
