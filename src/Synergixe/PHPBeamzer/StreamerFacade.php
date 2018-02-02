@@ -19,7 +19,7 @@ class StreamerFacade extends Facade {
 
     protected static function getFacadeAccessor(){
 
-        return 'beamzer';
+        return 'streamer';
     }
 }
 
