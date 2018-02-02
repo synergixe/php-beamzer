@@ -122,7 +122,7 @@ class Beamzer {
 		    $sourceData = method_exists($sourceData, 'toArray')? $sourceData->toArray() : $sourceData;
 		
 		    if(!is_array($sourceData)){
-		    	;
+		    	$sourceData = (array) $sourceData;
 		    }
 		
 		    $data = array_map("normalize_laravel_notifications", $sourceData);
@@ -133,7 +133,7 @@ class Beamzer {
 
                     if(count($sourceData)) === 0){
                         return $stream->setRetry(10000);
-			    		->setData('{"status":"empty"}')
+			    		->setData('{"status":"heartbeat"}')
                                      	->end()
 					->flush();
                     }
@@ -144,7 +144,7 @@ class Beamzer {
 		
 		    $this->request->getSession()->put('beamzer:request_count', 0);
 		
-		    while (TRUE) {
+		    while (count($chunks) != 0) {
 			 
 			    if(connection_aborted()){
 				 exit();
