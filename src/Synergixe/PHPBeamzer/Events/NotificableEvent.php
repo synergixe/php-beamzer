@@ -1,44 +1,44 @@
 <?php
 
-			namespace Synergixe\PHPBeamzer\Events;
+namespace Synergixe\PHPBeamzer\Events;
 
-			use App\User as User;
-			use Illuminate\Queue\SerializesModels;
-			use Illuminate\Database\Eloquent\Model as Model;
 
-			class NotificableEvent {
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Database\Eloquent\Model as Model;
 
-				 use SerializesModels;
+class NotificableEvent {
 
-				/**
-				 * @var App\User
-				 */
-				public $producer = NULL;
+	 use SerializesModels;
 
-				/**
-				 * @var Eloquent\Model
-				 */
+	/**
+	 * @var App\User
+	 */
+	public $producer = NULL;
 
-				public $payload = NULL;
+	/**
+	 * @var Eloquent\Model
+	 */
 
-				/**
-				 * @var int
-				 */
+	public $payload = NULL;
 
-				public $timing = -1;
+	/**
+	 * @var int
+	 */
 
-				public function __construct(User $producer, Model $payload){
+	public $timing = -1;
 
-					$this->producer = $producer;
+	public function __construct(Model $producer, Model $payload){
 
-					$this->payload = $payload;
+		$this->producer = $producer;
 
-					$this->timing = time();
-				}
+		$this->payload = $payload;
 
-				public function broadcastOn(){
+		$this->timing = time();
+	}
 
-					return [];
-				}
-			}
+	public function broadcastOn(){
+
+		return [];
+	}
+}
 ?>
