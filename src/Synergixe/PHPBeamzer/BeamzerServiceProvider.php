@@ -25,7 +25,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 * @var bool
 	 */
 
-	protected $defer = false;
+	protected $defer = true;
 
 
 	/**
@@ -58,7 +58,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 		// $this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 		
-		$this->app->singleton('Streamer', function($app){
+		$this->app->singleton('beamzer', function($app){
 			
 			/*
 				Setup the Last-Event-Id value for the package
@@ -79,13 +79,33 @@ class BeamzerServiceProvider extends ServiceProvider {
 			}
 			
 			$app->request->query->add(['lastEventId' => $last_event_id]);
+			
+			$redis_config = config('database.redis');
+			
+			$redis = NULL;
+			
+			if($redis_config['client'] === 'predis'){
+				
+				$redis = $app['redis.connection'];
+			}
 
-			return Beamzer::createStream($app->request);
+			return Beamzer::createStream($app->request, $redis);
 		});
 
-		$this->app->alias('Streamer', 'beamzer');
+		$this->app->alias('beamzer', 'streamer');
 
 	}
+	
+	/**
+	     * Get the services provided by the provider.
+	     *
+	     * @return array
+	     */
+	
+	    public function provides()
+	    {
+		return ['beamzer'];
+	    }
 
 	/**
 	 *
