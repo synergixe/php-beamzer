@@ -180,6 +180,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ```php
 
 			/*In app/Listeners/NotificableEventListener.php */
+			
+			use Synergixe\PHPBeamzer\Notifications\ActivityStreamNotification as ActivityStreamNotification;
 
 			class NotificableEventListener implements ShouldQueue {
 
@@ -198,13 +200,13 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 						followers of a user on a social platform.
 
 						So, all follwers are notified using beamzers'
-						custom notification {ActivityStream} with an
+						custom notification {ActivityStreamNotification} with an
 						action 'paid'.
 					*/
 
 					$user->followers()->get()->each(function($target, $key) use ($event) {
 						$target->notify(
-				        	new ActivityStream(
+				        	new ActivityStreamNotification(
 				        		$event->producer->setActionPerformed('paid', $event->timing),
 				        		$event->payload,
 				        		$event->timing
