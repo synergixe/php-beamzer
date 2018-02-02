@@ -78,6 +78,8 @@ class Beamzer {
         }
 
         public function start(array $options){
+	
+	    set_time_limit( 0 );
 		
 	    ignore_user_abort( true );
 
@@ -153,7 +155,7 @@ class Beamzer {
 		
 		$client = $this->redis->client();
 			
-			// Store in Redis DB for delay
+			// @TODO: Store in Redis DB for delay (Redis has a timer that persists data in memory... so we can exploit that)
 			# client->set('', );
 		
 		    $stream = new Stream();
@@ -171,6 +173,7 @@ class Beamzer {
 			$event->setData($payload)
 				$event->end()
 					->flush();
+		});
 		    
 	}
 
@@ -187,6 +190,13 @@ class Beamzer {
                     $stream = new Stream();
 
                     if(count($sourceData)) === 0){
+			if(connection_aborted()){
+				 if(!is_null($this->cancellable)){   
+				 	cancel_shutdown_function($this->cancellable);
+				 }
+				 exit();
+			}
+			    
                         return $stream->setRetry((1000 * $this->req_count));
 			    		->setData('{"heartbeat":true}')
                                      	->end()
@@ -239,8 +249,6 @@ class Beamzer {
 
         private function stream_work(){
 
-            	set_time_limit( 0 );
-		
 		$can_use_redis = $this->getConfig('use_redis');
             
 		if(is_null($this->redis) 
@@ -252,7 +260,9 @@ class Beamzer {
 			
 		}else{
 			
-			$this->onPublish($this->source_callback, $this->source_callback_args, $this->settings);
+			// $this->onPublish($this->source_callback, $this->source_callback_args, $this->settings);
+			
+			$this->run_in_background(array(&$this, 'onPublish'), array($this->source_callback, $this->source_callback_args, $this->settings)
 		}
             
         }
