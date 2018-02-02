@@ -34,6 +34,8 @@ class Beamzer {
 	private $redis;
 	
 	private $settings = array('as_event' => '', 'ignore_id' => FALSE);
+	
+	protected $cancellable;
 
         protected static $instance = NULL;
 
@@ -54,6 +56,8 @@ class Beamzer {
 	    $this->redis = $redis;
 
             $this->req_count = 0;
+		
+	    $this->cancellable = NULL;
 
         }
 	
