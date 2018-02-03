@@ -92,7 +92,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 			return Beamzer::createInstance($app->request, $redis);
 		});
 
-		$this->app->alias('beamzer', 'streamer');
+		$this->app->alias('beamzer', 'Streamer');
 
 	}
 	
