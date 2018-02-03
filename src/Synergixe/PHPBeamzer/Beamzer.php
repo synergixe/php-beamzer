@@ -259,7 +259,7 @@ class Beamzer {
 		$can_use_redis = $this->getConfig('use_redis');
             
 		if(is_null($this->redis) 
-		   	&& $can_use_redis){
+		   	&& !$can_use_redis){
 			
 			// $this->onEvent($this->source_callback, $this->source_callback_args, $this->settings);
 			
