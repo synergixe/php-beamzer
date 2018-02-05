@@ -30,21 +30,37 @@ class NotificableEvent {
 	 * @var Eloquent\Model
 	 */
 
-	public $payload = NULL;
+	public $reciever = NULL;
 
 	/**
 	 * @var int
 	 */
 
 	public $timing = -1;
+	
+	/**
+	 * @var mixed
+	 */
+	
+	private $kind = NULL;
 
-	public function __construct(Model $producer, Model $payload){
+	public function __construct(Model $producer, Model $reciever){
 
 		$this->producer = $producer;
 
-		$this->payload = $payload;
+		$this->reciever = $reciever;
 
 		$this->timing = time();
+	}
+	
+	public function getKind(){
+	
+		return $this->kind;
+	}
+	
+	public function setKind($kind){
+	
+		$this->kind = $kind;
 	}
 
 	public function broadcastOn(){
