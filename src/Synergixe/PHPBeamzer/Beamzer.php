@@ -25,15 +25,17 @@ class Beamzer {
 
         private $source_callback_args;
 
-        private $source_ops_interval;
-
         private $req_count;
 
         private $request;
 	
 	private $redis;
 	
-	private $settings = array('as_event' => '', 'ignore_id' => FALSE);
+	private $tick;
+	
+	private $settings;
+	
+	private $cors_headers;
 	
 	protected $cancellable;
 
@@ -57,6 +59,21 @@ class Beamzer {
 
             $this->req_count = 0;
 		
+	    $this->tick = -1;
+		
+	    $this->settings = array(
+		    'as_event' => '', 
+		    'ignore_id' => FALSE, 
+		    'exec_limit' => 900, 
+		    'as_cors' => FALSE, 
+		    'is_ie' => FALSE
+	    );
+		
+	    $this->cors_headers = array(
+		    'Access-Control-Allow-Credentials' => 'true', 
+		    'Access-Control-Allow-Origin' => '*'
+	    );
+		
 	    $this->cancellable = NULL;
 
         }
@@ -72,20 +89,39 @@ class Beamzer {
 		return $beamzerConfigs;
 	}
 
-        public function setup(array $settings){
+        public function setup(\array $settings){
 
 		$this->settings = array_merge($this->settings, $settings);
-        }
-
-        public function start(array $options){
-	
-	    set_time_limit( 0 );
 		
-	    ignore_user_abort( true );
+		return $this;
+        }
+	
+	protected function get_exec_time_diff($timecount){
+        
+		return ($timecount - $this->tick);
+	}
+
+	protected function sleep($time){
+
+	    usleep($time * 1000000);
+	}
+
+	protected function is_tick_elapsed(){
+		
+		$exec_limit = $this->settings['exec_limit'];
+
+		return ($exec_limit !== 0 
+			&& ($this->get_exec_time_diff(time()) > $exec_limit));
+	}
+
+        public function send(\array $options){
+	
+	    @set_time_limit( 0 );
+		
+	    @ignore_user_abort( true );
 
             $this->source_callback = $options['data_source_callback'];
             $this->source_callback_args = $options['data_source_callback_args'];
-            $this->source_ops_interval = $options['data_source_ops_timeout'];
             
             if($this->request instanceof Request){
 		 
@@ -95,12 +131,11 @@ class Beamzer {
 
 			    if(preg_match('/MSIE/', $ua)){
 
-				 $this->source_callback_args['is_ie'] = TRUE;
+				 $this->settings['is_ie'] = TRUE;
 			    }   
 				
 			}
                 
-		    
 		    	$count = intval($this->request->getSession()->get('beamzer:request_count'));
 			
 		    	if(!isset($count)){
@@ -114,17 +149,27 @@ class Beamzer {
             }else{
                 @trigger_error('Symphony Request object is required to initialize');
             }
+		
+	    $headers = array(
+		    'Connection' => 'keep-alive', // Instruct/Implore the browser to keep the TCP/IP connection open
+		    'X-Accel-Buffering' => 'no' // Disable FastCGI Buffering on Nginx 
+	    );
+		
+	    if($this->settings['as_cors']){
+	    	$headers = array_merge($headers, $this->cors_headers);
+	    }
 
-            $headers = array_merge(Stream::getHeaders(), array('Connection' => 'keep-alive', 'Access-Control-Allow-Origin' => '*'));
+            $headers = array_merge(Stream::getHeaders(), $headers);
 
             $response = new StreamedResponse(array(&$this, 'stream_work'), 200, $headers);
 
 	    /*foreach ($headers as $name => $value) {
 
 		$response->headers->set($name, $value);
+		
 	    }*/
             
-            return $response;
+            return $response->send();
 
         }
 	
@@ -141,7 +186,7 @@ class Beamzer {
 		    $chunk_size = intval($this->getConfig('data_chunks_size'));
 		
 		    if($chunk_size > 10){
-		    	$chunk_size = 10;
+		    	 $chunk_size = 10;
 		    }
 		
 		    $chunks = array_chunk($data, $chunk_size, true);
@@ -149,24 +194,25 @@ class Beamzer {
 		    return $data;
 	}
 	
-	private function onPublish($fn, $arr, $sets){
+	protected function onPublish($sets){
 		
 		$channel = $this->getConfig('redis_pub_channel');
 		
 		$client = $this->redis->client();
+		
+		$that = $this;
+		
+	     	$stream = new Stream();
+	
+		$this->redis->subscribe($channel, function($payload) use ($stream, $client, $that){
 			
 			// @TODO: Store in Redis DB for delay (Redis has a timer task that persists data in memory to disk... so we can exploit that)
-			# client->set('', );
-		
-		    $stream = new Stream();
-	
-		$this->redis->subscribe($channel, function($payload) use ($stream){
+			# client->lpush('beamzer:data', $payload);
 			
 			if(connection_aborted()){
-				 if(!is_null($this->cancellable)){   
+				 if(!is_null($that->cancellable)){   
 				 	cancel_shutdown_function($this->cancellable);
 				 }
-				 exit();
 			 }
 			
 			$event = $stream->event();
@@ -184,68 +230,153 @@ class Beamzer {
 		    
 	}
 
-        private function onEvent($fn, $arr, $sets){
-            
-                    $sourceData = call_user_func_array($fn, $arr['args']);
-		
-		    $chunks = array();
-		
-		    $data = $this->extractData($sourceData, $chunks);
-		
-		    $max_req_count = intval($this->getConfig('retry_limit_count'));
+        protected function onEvent($fn, $arr, $sets){
 
-                    $stream = new Stream();
+		$noupdate = FALSE;
 
-                    if(count($sourceData)) === 0){
-			if(connection_aborted()){
-				 if(!is_null($this->cancellable)){   
+		$tryupdate_count = 0;
+
+		$event = NULL;
+
+		while(TRUE){
+
+			/*
+				HTTP Clients can disconnect from the server at will
+				so, we always need to check up on them.
+
+				if the browser disconnected abruptly, then cancel
+				the PHP shutdown function so that no data is sent
+			*/
+
+			if(connection_abroted()){
+				
+				if(!is_null($this->cancellable)){   
 				 	cancel_shutdown_function($this->cancellable);
-				 }
-				 exit();
+				}
+
+				break;
 			}
-			    
-                        return $stream->setRetry((1000 * $this->req_count));
-			    		->setData('{"heartbeat":true}')
-                                     	->end()
-					->flush();
-                    }
-		
-		    $last_item = end($data);
-		
-		    if($this->req_count >= $max_req_count){
-			
-			$this->req_count = 0;
-		    	$this->request->getSession()->put('beamzer:request_count', $this->req_count);
-		    }
-		
-		    while (count($chunks) != 0) {
-			 
-			    if(connection_aborted()){
-				 if(!is_null($this->cancellable)){   
-				 	cancel_shutdown_function($this->cancellable);
-				 }
-				 exit();
-			    }
-			    
-			    $event = $stream->event();
-			    
-			    $event->setId($last_item['timing']);
-			    
-			    if($a['is_ie']){
-				$event->addComment(str_repeat(" ", 2048)) // 2 kB padding for old IE (8/9)
-			    }
-			    
-			    if(!empty($sets['as_event'])){
-                                $event->setEvent($sets['as_event'])
-			    }
-			    
-			    $event->setData(json_encode(array_shift($chunks)));
-            				            
-                    }
-		
-		    $stream->end()->flush();
-            
-        }
+
+			/*
+				If there is no data update from the previous iteration
+				then, we need to idle the running process for 0.9 secs
+
+				if we have a reference to the `$event` object from the
+				previous iteration and we have tried twice before with
+				no success on a data update 
+
+				then, we tell the browser to retry later.
+			*/
+
+			if($noupdate){
+
+				$noupdate = FALSE;
+
+				$this->sleep(0.9);
+
+				if(!is_null($event) 
+					&& $tryupdate_count == 2){
+					$event->retry((1000 * $this->req_count))
+						->addComments('heartbeat')
+							->end()
+							   ->flush();
+						
+				}
+
+				++$tryupdate_count;
+			}
+
+			$chunks = array();
+
+			/*
+			   If and when the time allowed for execution of outer
+			   iteration 
+			*/
+
+			if($this->is_tick_elapsed() 
+				|| $tryupdate_count > 2){
+				
+				break;
+			}
+
+			$sourceData = call_func_array($fn, $arr['args']);
+
+			$data = $this->extractData($sourceData, $chunks);
+
+			$event = (new Stream)->event();
+
+			if(count($data) == 0){
+
+				$noupdate = TRUE;
+
+				$max_req_count = intval($this->getConfig('retry_limit_count'));
+
+				if($this->req_count >= $max_req_count){
+				
+					$this->req_count = 0;
+			    		$this->request->getSession()->put('beamzer:request_count', $this->req_count);
+			    	}
+
+				/* 
+					We had initially set the `Connection` response header to 'keep-alive'
+					However, HTTP clients (e.g. browser) are at liberty to disregard
+					this 'keep-alive' value and disconnect at will - according to the 
+					W3C HTTP Specs.
+
+					Since there isn't an update that we can send to the browser as {data},
+
+					We do earnestly need the connection open for a little longer
+					thus, we send out SSE comment data to trick the browser into 
+					expecting something more; forcing it to keep the connection alive/open.
+
+					so, the browser can still recieve data - maybe OR maybe not.
+
+					See: https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
+				*/
+				$event->addComments(sha1(mt_rand()))
+						->end()
+						   ->flush();
+
+				continue;
+
+			}
+
+
+			$last_notification = end($data);
+
+			$id = $last_notification['timing'];
+
+			/*
+				We need to update the Request input data
+				for the next outermost iteration.
+				
+				This will enable us read fresh notification
+				data from the DB using the 'created_at'
+				timestamp column/field
+			*/
+			$this->request->query->set('lastEventId', $id);
+
+			while(count($chunks) != 0){
+				
+				$event->setId($id)
+					->setEvent($sets['as_event'])
+				
+				if($a['is_ie']){
+					$event->addComment(str_repeat(";", 2048)) // 2 kB padding for old IE (8/9)
+			    	}
+				
+				$event->setData(
+					json_encode(
+						array_shift($chunks)
+					))->end()
+						->flush();
+			}
+
+			$noupdate = TRUE;	
+		}
+
+		// exit();
+    	}
 
 	
 
@@ -256,6 +387,16 @@ class Beamzer {
 
         private function stream_work(){
 
+		$this->tick = time();
+		
+		/*
+			prevent buffering from taking place
+		*/
+		
+		if(function_exists('apache_setenv')){
+		    @apache_setenv('no-gzip', 1);
+		}
+		
 		$can_use_redis = $this->getConfig('use_redis');
             
 		if(is_null($this->redis) 
@@ -267,9 +408,9 @@ class Beamzer {
 			
 		}else{
 			
-			// $this->onPublish($this->source_callback, $this->source_callback_args, $this->settings);
+			// $this->onPublish($this->settings);
 			
-			$this->run_in_background(array(&$this, 'onPublish'), array($this->source_callback, $this->source_callback_args, $this->settings)
+			$this->run_in_background(array(&$this, 'onPublish'), array($this->settings)
 		}
             
         }
