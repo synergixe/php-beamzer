@@ -1,4 +1,4 @@
-﻿# PHPBeamzer
+# PHPBeamzer
 
 This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4 and 5.5 only (for now). 
 
@@ -32,6 +32,23 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 	Route::post('/notify/subjects/{kind}', 'MessageController@fireNotificationEvent');
 	Route::patch('/user/notifications/update/{nid}', 'EventSourceController@updateNotificationsAsRead');
 	
+```
+
+### Update the app config for service provider and alias classes
+
+```php
+
+	/* In app/config/app.php */
+
+	'providers' => [
+	    ...
+	    Synergixe\PHPBeamzer\Providers\Laravel\BeamzerServiceProvider::class
+	],
+	'alias' => [
+	    ...
+	    'Streamer' => Synergixe\PHPBeamzer\Facades\Laravel\Streamer::class
+	]
+
 ```
 
 ### Setup the Controller for read notifications from the DB and return it to PHPBeamzer
