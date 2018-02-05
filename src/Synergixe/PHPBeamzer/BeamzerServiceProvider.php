@@ -14,6 +14,7 @@
 namespace Synergixe\PHPBeamzer;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
+use Synergixe\PHPBeamzer\Facades\Streamer as Streamer;
 use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -92,7 +93,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 			return Beamzer::createInstance($app->request, $redis);
 		});
 
-		$this->app->alias('beamzer', 'Streamer');
+		$this->app->alias('beamzer', Streamer::class);
 
 	}
 	
@@ -104,7 +105,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 	
 	    public function provides()
 	    {
-		return ['beamzer'];
+		return ['beamzer', Streamer::class];
 	    }
 
 	/**
