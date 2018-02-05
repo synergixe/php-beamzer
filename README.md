@@ -29,7 +29,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 	/* In routes/web.php */
 
 	Route::get('/users/notifications', 'EventSourceController@getNotifications');
-	Route::post('/notify/followers', 'MessageController@fireNotificationEvent');
+	Route::post('/notify/subjects/{kind}', 'MessageController@fireNotificationEvent');
 	Route::patch('/user/notifications/update/{nid}', 'EventSourceController@updateNotificationsAsRead');
 	
 ```
@@ -69,7 +69,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			
 			/*
 				The $nid variable is the notification id sent via 
-				AJAX (as a PATCH request) to update the staus of
+				AJAX (as a PATCH request) to update the status of
 				the notification to "read"
 			*/
 			
@@ -147,7 +147,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					// code goes here...
 				}		
 				
-				public function fireNotificationEvent(Request $request) {
+				public function fireNotificationEvent(Request $request, $kind) {
 
 					$user = \Auth::user();
 					
@@ -159,7 +159,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 						)->get()
 					);
 					
-					$event->setKind('follow');
+					$event->setKind($kind);
 
 					event($event);
 				}
