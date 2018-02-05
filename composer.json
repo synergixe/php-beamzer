@@ -1,7 +1,10 @@
 {
   "name": "synergixe/php-beamzer",
-	"description": "This is a library that provides support for real-time feeds and notifications for web applications (using Server-Sent Events (SSE) and COMET technologies only)",
-	"keywords": ["ajax long polling", "server-sent events"],
+	"description": "This is a library that provides support for real-time feeds and notifications for web applications using Server-Sent Events (SSE) and COMET technologies only)",
+	"keywords": [
+		"ajax long polling", 
+		"server-sent events"
+	],
 	"type": "library",
 	"authors": [
 		{
@@ -25,28 +28,28 @@
           "illuminate/console":"^5.4",
           "symphony/http-foundation":"dev-master"
   },
-	"autoload": {
-	   	"psr-4": {
-			"Synergixe\\PHPBeamzer\\": "src/"
-	    	},
-		"files": [
-		      	"src/function.php"
-		]
+  "autoload": {
+	"psr-4": {
+		"Synergixe\\PHPBeamzer\\": "src/"
 	},
+	"files": [
+		"src/function.php"
+	]
+  },
   "autoload-dev": {
           "psr-4":{
                 "Synergixe\\PHPBeamzer\\Test\\":"tests"
           }
   },
-	"config":{
-		      "sort-packages":true
-	},
-	"minimum-stability":"stable",
+ "config":{
+	  "sort-packages":true
+ },
+ "minimum-stability":"stable",
   "prefer-stable":true,
   "extra": {
         "laravel": {
             "providers": [
-                "Synergixe\\PHPBeamzer\\BeamzerServiceProvider"
+                "Synergixe\\PHPBeamzer\\Providers\\Laravel\\BeamzerServiceProvider"
             ]
 	}
   },
