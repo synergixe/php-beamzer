@@ -15,7 +15,7 @@ namespace Synergixe\PHPBeamzer;
 
 use Illuminate\Support\Facades\Facade;
 
-class StreamerFacade extends Facade {
+class Streamer extends Facade {
 
     protected static function getFacadeAccessor(){
 
