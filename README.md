@@ -243,7 +243,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 										'asked to follow', 
 										$event->timing
 									),
-									$event->payload,
+									$event->reciever,
 									$event->timing
 								)
 							    )->delay(
