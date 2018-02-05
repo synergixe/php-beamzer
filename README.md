@@ -29,7 +29,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 	/* In routes/web.php */
 
 	Route::get('/users/notifications', 'EventSourceController@getNotifications');
-	Route::post('/nofify/followers', 'MessageController@fireNotificationEvent');
+	Route::post('/notify/followers', 'MessageController@fireNotificationEvent');
+	Route::patch('/user/notifications/update/{nid}', 'EventSourceController@updateNotificationsAsRead');
 	
 ```
 
@@ -65,6 +66,27 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				 }
 
 			}
+			
+			/*
+				The $nid variable is the notification id sent via 
+				AJAX (as a PATCH request) to update the staus of
+				the notification to "read"
+			*/
+			
+			public function updateNotificationsAsRead(Request $request, $nid){
+				
+					$user = \Auth::user();
+					
+					$user->unReadNotifications()
+						->where('id', $nid)
+							->update(['read_at' => date('Y-m-d H:i:s')]);
+							
+					if($request->expectsJson())
+						return response()->json(array('status' => 'ok'));
+					else
+						return response('okay', 200);
+					
+			}
 
 			/*
 				The {Streamer} object in injected into the 
@@ -75,12 +97,10 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			
 			    $user = \Auth::user();
 			    
-			    $streamer->setup(array(
+			    return $streamer->setup(array(
 			    	'as_event' => 'activity', // event name to listen for on the client-side
 				'exec_limit' => 3000 // number of seconds allowed for streamer to collect data and send to the browser
-			    ));
-			    
-			    return $streamer->send(
+			    ))->send(
 			        array(
 			           'data_source_callback' => array(&$this, 'pullNotificationData'), // function/method to return notification data as array
 			           'data_source_callback_args' => array(
@@ -138,7 +158,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 								$request->input('status')
 							)->get()
 					));
-				}		
+				}
 			}
 ```
 
@@ -148,8 +168,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			/* In app/User.php */
 
-			use Synergixe\PHPBemazer\Modifiers\Actionable as Actionable;
-			use Synergixe\PHPBemazer\Modifiers\Describable as Describable;
+			use Synergixe\PHPBeamzer\Modifiers\Actionable as Actionable;
+			use Synergixe\PHPBeamzer\Modifiers\Describable as Describable;
 
 			class User extends Eloquent {
 
