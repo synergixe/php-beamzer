@@ -150,14 +150,18 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				public function fireNotificationEvent(Request $request) {
 
 					$user = \Auth::user();
-
-					event(new NotificableEvent(
+					
+					$event = new NotificableEvent(
 						$user, 
 						$user->tasks()->where(
-								'status', 
-								$request->input('status')
-							)->get()
-					));
+							'status', 
+							$request->input('status')
+						)->get()
+					);
+					
+					$event->setKind('follow');
+
+					event($event);
 				}
 			}
 ```
@@ -216,28 +220,38 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				}
 
 				public function handle(NotificableEvent $event){
+				
+					$event_kind = $event->getKind();
 
 					/* 
 						The below code assumes that the {User} model has a 
 						relationship called {followers} -> e.g. could be
 						followers of a user on a social platform.
 
-						So, all follwers are notified using beamzers'
+						So, all followers are notified using beamzers'
 						custom notification {ActivityStreamNotification} with an
-						action 'paid'.
+						action of 'asked to follow'.
 					*/
-
-					$user->followers()->get()->each(function($follower, $index) use ($event) {
-						$follower->notify(
-				        	new ActivityStreamNotification(
-				        		$event->producer->setActionPerformed('paid', $event->timing),
-				        		$event->payload,
-				        		$event->timing
-				        	)
-					    )->delay(
-					        Carbon::now()->addMinutes(5);
-					    );
-					});
+					
+					switch($event_kind){
+					
+						case "follows":
+							$user->followers()->get()->each(function($follower, $index) use ($event) {
+								$follower->notify(
+								new ActivityStreamNotification(
+									$event->producer->setActionPerformed(
+										'asked to follow', 
+										$event->timing
+									),
+									$event->payload,
+									$event->timing
+								)
+							    )->delay(
+								\Carbon::now()->addMinutes(5);
+							    );
+							});
+						break;
+					}
 				}
 
 				public function failed(NotificableEvent $event, $exception){
@@ -250,7 +264,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ```
 ### On the client-side, setup _beamzer-client JS libary_ like so
 
-```javascript
+```html
 <script src="path/to/beamzer-client.min.js"></script>
 
 <script type="text/javascript">
