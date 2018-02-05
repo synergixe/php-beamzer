@@ -1,6 +1,6 @@
 ﻿# PHPBeamzer
 
-This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4 and 5.5 only. 
+This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4 and 5.5 only (for now). 
 
 ## How to Use
 
@@ -28,8 +28,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 	/* In routes/web.php */
 
-	Route::get('/users/notifications/{id}', 'EventSourceController@getNotifications');
-	Route::post('/nofify/followers/', 'MessageController@fireNotificationEvent');
+	Route::get('/users/notifications', 'EventSourceController@getNotifications');
+	Route::post('/nofify/followers', 'MessageController@fireNotificationEvent');
 	
 ```
 
@@ -47,7 +47,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				// code goes here...
 			}
 
-			private function pullNotificationStream(Request $request, $user){
+			private function pullNotificationData(Request $request, $user){
 
 				 if(!isset($user)){
 				 	return array();
@@ -71,18 +71,20 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				controller method as a dependency.
 			*/
 
-			public function getNotifications(Request $request, $id, Streamer $streamer){
+			public function getNotifications(Request $request, Streamer $streamer){
+			
+			    $user = \Auth::user();
 			    
 			    $streamer->setup(array(
-			    	'as_event' => 'activity'
+			    	'as_event' => 'activity', // event name to listen for on the client-side
+				'exec_limit' => 3000 // number of seconds allowed for streamer to collect data and send to the browser
 			    ));
 			    
-			    return $streamer->start(
+			    return $streamer->send(
 			        array(
-			           'data_source_callback' => array(&$this, 'pullNotificationStream'),
-			           'data_source_ops_timeout' => 3000,
+			           'data_source_callback' => array(&$this, 'pullNotificationData'), // function/method to return notification data as array
 			           'data_source_callback_args' => array(
-			                    'args' => array(App\User::find($id))
+			                    'args' => array($request, $user) // arguments to the `data_source_callback` method/function
 			            )
 			        )
 			    );
@@ -116,7 +118,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			/* In app/Http/Controllers/MessageController.php */
 			
-			use Synergixe\PHPBeamzer\Events\NotificableEvent as NotificableEvent
+			use Synergixe\PHPBeamzer\Events\NotificableEvent as NotificableEvent;
 
 			class MessageController extends Controller {
 
@@ -182,6 +184,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			/*In app/Listeners/NotificableEventListener.php */
 			
 			use Synergixe\PHPBeamzer\Notifications\ActivityStreamNotification as ActivityStreamNotification;
+			use Synergixe\PHPBeamzer\Events\NotificableEvent as NotificableEvent;
 
 			class NotificableEventListener implements ShouldQueue {
 
@@ -192,7 +195,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					// code goes here...
 				}
 
-				public function handle(Synergixe\PHPBeamzer\Events\NotificableEvent $event){
+				public function handle(NotificableEvent $event){
 
 					/* 
 						The below code assumes that the {User} model has a 
@@ -204,8 +207,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 						action 'paid'.
 					*/
 
-					$user->followers()->get()->each(function($target, $key) use ($event) {
-						$target->notify(
+					$user->followers()->get()->each(function($follower, $index) use ($event) {
+						$follower->notify(
 				        	new ActivityStreamNotification(
 				        		$event->producer->setActionPerformed('paid', $event->timing),
 				        		$event->payload,
@@ -217,7 +220,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					});
 				}
 
-				public function failed(Synergixe\PHPBeamzer\Events\NotificableEvent $event, $exception){
+				public function failed(NotificableEvent $event, $exception){
 
 			        	// code goes here...
 
@@ -228,11 +231,29 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ### On the client-side, setup _beamzer-client JS libary_ like so
 
 ```javascript
-
-<script src=""></script>
+<script src="path/to/beamzer-client.min.js"></script>
 
 <script type="text/javascript">
-
+	var beam = new BeamzerClient({
+               source:"http://localhost:4001/users/notifications",
+               params:{
+                   id:"9UmxjXuu8yjI@jws8468#3"
+               },
+               options:{loggingEnabled:true, interval:2500}
+          });
+ 
+          beam.start(function onOpen(e){ 
+	  	console.log("SSE connection established!");
+	  }, onfunction onError(e){
+	  	console.log("error: ", e.error);
+	  }, function onMessage(e){
+	  	console.log("message id: ", e.lastEventId);
+	  	console.log("message data: ", e.data);
+	  });
+          beam.on("activity", function(e){
+	  	console.log("event id: ", e.lastEventId);
+	  	console.log("even data: ", e.data);
+	  });
 </script>
 
 ```
