@@ -206,12 +206,14 @@ class Beamzer {
 	
 		$this->redis->subscribe($channel, function($payload) use ($stream, $client, $that){
 			
-			// @TODO: Store in Redis DB for delay (Redis has a timer task that persists data in memory to disk... so we can exploit that)
+			// @TODO: Store in Redis DB for delay (Redis has a timer task that persists data in memory to disk...
+			// so we can exploit that)
+			
 			# client->lpush('beamzer:data', $payload);
 			
 			if(connection_aborted()){
 				 if(!is_null($that->cancellable)){   
-				 	cancel_shutdown_function($this->cancellable);
+				 	cancel_shutdown_function($that->cancellable);
 				 }
 			 }
 			
@@ -355,14 +357,17 @@ class Beamzer {
 				timestamp column/field
 			*/
 			$this->request->query->set('lastEventId', $id);
+			
+			$event->setId($id);
 
 			while(count($chunks) != 0){
 				
-				$event->setId($id)
-					->setEvent($sets['as_event'])
+				if(!empty($sets['as_event'])){
+					$event->setEvent($sets['as_event']);
+				}
 				
-				if($a['is_ie']){
-					$event->addComment(str_repeat(";", 2048)) // 2 kB padding for old IE (8/9)
+				if($sets['is_ie']){
+					$event->addComment(str_repeat(";", 2048)); // 2 kB padding for old IE (8/9)
 			    	}
 				
 				$event->setData(
