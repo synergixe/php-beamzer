@@ -1,9 +1,10 @@
 {
   "name": "synergixe/php-beamzer",
-	"description": "This is a library that provides support for real-time feeds and notifications for web applications using Server-Sent Events (SSE) and COMET technologies only)",
+	"description": "This is a library that provides support for real-time feeds and notifications for web applications",
 	"keywords": [
 		"ajax long polling", 
-		"server-sent events"
+		"server-sent events",
+		"event source"
 	],
 	"type": "library",
 	"authors": [
