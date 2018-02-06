@@ -47,7 +47,7 @@ class LaravelNotificationLoadCommand extends Command {
 
 		if(file_exists($file) && is_readable($file)){
 
-			$this->info('Updating Events Service Providers...');
+			$this->info('Quick Tip: Go and Update Events Service Provider File To Correctly Listen For Events');
 
 		}
 	}
