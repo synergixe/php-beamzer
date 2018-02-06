@@ -35,10 +35,11 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 * @return void
 	 */
 
-	public function boot(Beamzer $beam){
+	public function boot(){
 		
 		$this->loadConfig();
-		// $this->loadMigrations();
+		
+		// $this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 
 		if($this->app->runningInConsole()){
 			
@@ -57,7 +58,6 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	public function register(){
 
-		// $this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 		
 		$this->app->singleton('beamzer', function($app){
 			
