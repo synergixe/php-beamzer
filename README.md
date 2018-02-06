@@ -84,6 +84,24 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			}
 			
+			public function deleteAllUnreadNotifications(Request $request){
+			
+				$user = \Auth::user();
+			
+				$user->unreadNotifications()->delete();
+				
+				return response()->json(array('status' => 'ok'));
+			}
+			
+			public function countAllUnreadNotifications(Request $request){
+			
+				$user = \Auth::user();
+			
+				$count = $user->unreadNotifications()->groupBy('notifiable_type')->count();
+				
+				return response()->json(array('count' => $count));
+			}
+			
 			/*
 				The $nid variable is the notification id sent via 
 				AJAX (as a PATCH request) to update the status of
@@ -144,7 +162,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				 */
 				protected $listen = [
 				    'Synergixe\PHPBeamzer\Events\NotificableEvent' => [
-				        'App\Listeners\NotificableEventListener',
+				        'App\Listeners\NotificableEventListener'
 				    ],
 				];
 			}
