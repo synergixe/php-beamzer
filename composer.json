@@ -60,7 +60,7 @@
             ]
 	},
 	"aliases": {
-            "Streamer": "Synergixe\\PHPBeamzer\\Facades\\Streamer"
+            "Streamer": "Synergixe\\PHPBeamzer\\Facades\\Laravel\\Streamer"
         }
   },
   "scripts": {
