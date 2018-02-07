@@ -26,7 +26,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 * @var bool
 	 */
 
-	protected $defer = true;
+	protected $defer = false;
 
 
 	/**
@@ -41,12 +41,12 @@ class BeamzerServiceProvider extends ServiceProvider {
 		
 		// $this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 
-		if($this->app->runningInConsole()){
+		/*if($this->app->runningInConsole()){
 			
 			$this->commands([
 				ComposeRedisServiceCommand::class
 			]);
-		}
+		}*/
 	}
 
 
@@ -65,7 +65,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 				Setup the Last-Event-Id value for the package
 			*/
 		
-			$last_event_id = $app->request->query->('lastEventId');
+			$last_event_id = $app->request->query->get('lastEventId');
 			
 			/*if(!isset($last_event_id)){
 				 $last_event_id = $app->request->headers->get('LAST_EVENT_ID');
@@ -81,11 +81,12 @@ class BeamzerServiceProvider extends ServiceProvider {
 			
 			$app->request->query->add(['lastEventId' => $last_event_id]);
 			
-			$redis_config = config('database.redis');
+			$redis_config = $app->make('config')->get('database.redis');
 			
 			$redis = NULL;
 			
-			if($redis_config['client'] === 'predis'){
+			if((array_key_exists('client', $redis_config)) 
+				&& ($redis_config['client'] === 'predis')){
 				
 				$redis = $app['redis']->connection();
 			}
