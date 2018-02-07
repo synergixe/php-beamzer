@@ -13,7 +13,7 @@ if(! function_exists('normalize_laravel_notifications') ){
 	$item = json_decode($row['data'], TRUE);
 	$item['nid'] = $row['id'];
 	$item['timing'] = $row['created_at'];
-	$item['is_read'] = ($row['read_at'] !== NULL);
+	$item['is_read'] = !(is_null($row['read_at']));
 	  
 	return $item;
   }
