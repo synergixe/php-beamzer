@@ -358,7 +358,7 @@ class Beamzer {
 				data from the DB using the 'created_at'
 				timestamp column/field
 			*/
-			$this->request->query->set('lastEventId', $id);
+			$this->request->query->add(array('lastEventId' => $id));
 			
 			$event->setId($id);
 
