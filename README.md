@@ -78,7 +78,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				 	return $user->unreadNotifications->take(10)->get();
 				 }else{
 
-				 	return $user->unreadNotifications->where('created_at', '>=', $last_id)
+				 	return $user->unreadNotifications->where('created_at', '>', $last_id)
 									->take(10)->get();
 				 }
 
