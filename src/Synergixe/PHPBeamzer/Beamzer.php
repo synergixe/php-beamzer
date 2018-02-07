@@ -59,6 +59,8 @@ class Beamzer {
 
             $this->req_count = 0;
 		
+	    $this->req_count = 0;
+		
 	    $this->tick = -1;
 		
 	    $this->settings = array(
@@ -279,7 +281,7 @@ class Beamzer {
 				if(!is_null($event) 
 					&& $tryupdate_count == 2){
 					$event->retry((1000 * $this->req_count))
-						->addComments('heartbeat')
+						->addComment('heartbeat')
 							->end()
 							   ->flush();
 						
@@ -335,7 +337,7 @@ class Beamzer {
 
 					See: https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 				*/
-				$event->addComments(sha1(mt_rand()))
+				$event->addComment(sha1(mt_rand()))
 						->end()
 						   ->flush();
 
