@@ -1,6 +1,6 @@
 {
   "name": "synergixe/php-beamzer",
-	"description": "This is a library that provides support for real-time feeds and notifications for web applications",
+	"description": "This is a library that provides support for real-time feeds and notifications for PHP web applications",
 	"version":"0.1.1-alpha3",
 	"keywords": [
 		"ajax long polling", 
