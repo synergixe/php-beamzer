@@ -37,7 +37,7 @@
   },
   "autoload": {
 	"psr-4": {
-		"Synergixe\\PHPBeamzer\\": "src/"
+		"Synergixe\\PHPBeamzer\\": "src/Synergixe/PHPBeamzer"
 	},
 	"files": [
 		"src/function.php"
@@ -66,8 +66,8 @@
   "scripts": {
         "tests":"vendor/bin/phpunit",
         "post-install-cmd": [
-            	"php bin/beam-script.php",
-		"php artisan vendor:publish --tag=config"
+            	"@php bin/beam-script.php",
+		"@php artisan vendor:publish --tag=config"
         ]
   }
 }
