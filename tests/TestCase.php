@@ -1,8 +1,9 @@
 <?php
 
 namespace Synergixe\PHPBeamzer\Test;
-use Synergixe\PHPBeamzer\BeamzerFacade;
-use synergixe\PHPBeamzer\BeamzerServiceProvider;
+
+use Synergixe\PHPBeamzer\Facades\Laravel\Streamer;
+use synergixe\PHPBeamzer\Providers\Laravel\BeamzerServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase{
@@ -12,7 +13,8 @@ class TestCase extends OrchestraTestCase{
     /**
      * Load package service provider
      * @param  \Illuminate\Foundation\Application $app
-     * @return Synergixe\Beamzer\BeamzerServiceProvider
+     *
+     * @return Synergixe\PHPBeamzer\BeamzerServiceProvider
      */
     protected function getPackageProviders($app){
 
@@ -30,7 +32,16 @@ class TestCase extends OrchestraTestCase{
     protected function getPackageAliases($app){
 
         return [
-            'Beamzer' => BeamzerFacade::class,
+            'Streamer' => Streamer::class,
         ];
     }
+    
+    /*public function mock($class){
+        
+        $mock = Mockery::mock($class);
+
+        $this->app->instance($class, $mock);
+
+        return $mock;
+    }*/
 }
