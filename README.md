@@ -334,7 +334,7 @@ MIT
 
 ## Requirement
 
-- PHP 5.4.0 +
+- PHP 5.6.4 +
 - Redis Server (Optional)
 
 ## Support
