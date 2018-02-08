@@ -11,7 +11,7 @@
  *
  */
 
-namespace Synergixe\PHPBeamzer;
+namespace Synergixe\PHPBeamzer\Providers\Laravel;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
 use Synergixe\PHPBeamzer\Facades\Streamer as Streamer;
