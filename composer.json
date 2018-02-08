@@ -29,6 +29,7 @@
           "php":">=5.6.4",
           "illuminate/notifications":"~5.4",
           "illuminate/support":"~5.4",
+	  "illuminate/queue":"~5.4",
 	  "illuminate/redis":"~5.4",
 	  "illuminate/database":"~5.4",
           "igorw/event-source":"~1.0",
