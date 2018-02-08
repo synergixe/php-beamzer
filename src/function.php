@@ -22,7 +22,7 @@ if(! function_exists('normalize_laravel_notifications') ){
 if(! function_exists('config') ){
 	function config ($key) {
 		
-		return "";
+		return "-";
 	}
 }
 
