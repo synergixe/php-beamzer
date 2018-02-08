@@ -4,7 +4,7 @@ namespace Synergixe\PHPBeamzer\Test;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
 
-class InstanceTest extends TestCase {
+class InstanceTest extends SynergixeTestCase {
 
     /**
      * Check that the multiply method returns correct result
@@ -13,8 +13,11 @@ class InstanceTest extends TestCase {
 
     public function testInstanceIsCreated(){
 
-	$beamzer = Beamzer::createStream();
+	$beamzer = Beamzer::createInstance();
 
         $this->assertTrue($beamzer instanceOf Beamzer);
     }
+	
 }
+
+?>
