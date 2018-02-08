@@ -11,7 +11,7 @@
  *
  */
 
-namespace Synergixe\PHPBeamzer;
+namespace Synergixe\PHPBeamzer\Facades\Laravel;
 
 use Illuminate\Support\Facades\Facade;
 
