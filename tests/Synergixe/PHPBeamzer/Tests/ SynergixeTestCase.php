@@ -6,7 +6,7 @@ use Synergixe\PHPBeamzer\Facades\Laravel\Streamer;
 use Synergixe\PHPBeamzer\Providers\Laravel\BeamzerServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class TestCase extends OrchestraTestCase{
+class  SynergixeTestCase extends OrchestraTestCase{
   
     /**
      * Load package service provider
