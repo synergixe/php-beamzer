@@ -13,7 +13,15 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```
 
-### Then create your Controllers
+### Publish the config for the package to the Laravel config folder
+
+```bash
+
+		$ php artisan vendor:publish --tag=config
+
+```
+
+### Then create your Laravel Controllers
 
 ```bash
 
