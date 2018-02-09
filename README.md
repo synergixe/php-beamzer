@@ -30,7 +30,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 		$ php artisan make:controller MessageController
 ```
 
-### Create the Laravel Notifications Table
+### Create the Laravel Notifications Database Table
 
 ```bash
 
