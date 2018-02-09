@@ -30,6 +30,16 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 		$ php artisan make:controller MessageController
 ```
 
+### Create the Laravel Notifications Table
+
+```bash
+
+		$ php artisan notifications:table
+
+		$ php artisan migrate
+
+```
+
 ### Register the route for returning your stream notifications and for create notifications
 
 ```php
