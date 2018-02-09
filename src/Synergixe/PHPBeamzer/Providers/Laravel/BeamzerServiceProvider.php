@@ -38,8 +38,6 @@ class BeamzerServiceProvider extends ServiceProvider {
 	public function boot(){
 		
 		$this->loadConfig();
-		
-		// $this->mergeConfigFrom(__DIR__.'/../../config/beamzer.php', 'beamzer');
 
 		/*if($this->app->runningInConsole()){
 			
@@ -115,7 +113,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	private function loadConfig(){
 
-		$configPath = __DIR__.'/../../config/beamzer.php';
+		$configPath = __DIR__.'/../../../../../config/beamzer.php';
 
 		$this->publishes([
 			$configPath => config_path('beamzer.php')
@@ -129,7 +127,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	private function loadMigrations(){
 
-		$migrationsPath = __DIR__.'/../../migrations/';
+		$migrationsPath = __DIR__.'/../../../../../migrations/';
 
 		$this->publishes([
 			$migrationsPath => database_path('migrations')
