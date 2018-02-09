@@ -38,26 +38,32 @@ if (! $included) {
 }
 
 use Synergixe\PHPBeamzer\Commands\LaravelNotificationLoadCommand as LaravelNotificationLoadCommand;
-use Illuminate\Console\Application as Application;
-# use Symfony\Component\Console\Application;
-
-$name    = 'Beamzer Notification Loader Script';
-$version = '0.0.1';
-$artisan_console = new Application($name, $version);
 
 /* detect the Laravel environment if it is in place */
 
 if(defined('LARAVEL_START') 
     or class_exists('Illuminate\Foundation\Application')){
+    
+    $name = 'Beamzer Notification Loader Script';
+    $version = '0.1.1';
+    $artisan_console = new Illuminate\Console\Application(
+        $laravel = new Illuminate\Container\Conatiner, 
+        new Illuminate\Events\Dispatcher($laravel), 
+        $version
+    );
+
+    $artisan_console->setName($name);
+    $artisan_console->setAutoExit(TRUE);
+    $artisan_console->setCatchExceptions(TRUE);
 
     $artisan_console->add(
         new LaravelNotificationLoadCommand
     );
+    
+    $artisan_console->run();
 }else{
     
     ;
 }
-
-$artisan_console->run();
 
 ?>
