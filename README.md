@@ -75,6 +75,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 
 	/* In app/Http/Controllers/EventSourceController.php */
+	
+	use Synergixe\PHPBeamzer\Beamzer as Beamzer;
 
 	class EventSourceController extends Controller {
 
@@ -83,7 +85,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				// code goes here...
 			}
 
-			private function pullNotificationData(Request $request, $user){
+			public function pullNotificationData(Request $request, $user){
 
 				 if(!isset($user)){
 				 	return array();
@@ -142,11 +144,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			}
 
 			/*
-				The {Streamer} object in injected into the 
+				The {Beamzer} object in injected into the 
 				controller method as a dependency.
 			*/
 
-			public function getNotifications(Request $request, Streamer $streamer){
+			public function getNotifications(Request $request, Beamzer $streamer){
 			
 			    $user = \Auth::user();
 			    
