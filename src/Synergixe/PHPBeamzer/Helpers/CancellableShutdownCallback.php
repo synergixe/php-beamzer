@@ -7,7 +7,7 @@
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
- * @license MIT 
+ * @license MIT
  *
  */
 
@@ -17,15 +17,19 @@ final class CancellableShutdownCallback {
 
         private $callback;
 
-        public function __construct(\array $arguments){
-                
-                $this->callback = $arguments[0];
-                
-                register_shutdown_function(function() {
+        public function __construct(array $arguments){
 
-                        $this->callback && call_user_func_array(
-                                
-                                $this->callback, array_slice($arguments, 1)
+                $this->callback = $arguments[0];
+
+                $that = $this;
+
+                register_shutdown_function(function() use ($that, $arguments) {
+
+                        $details = array_slice($arguments, 1);
+
+                        is_array($that->callback) && call_user_func_array(
+
+                                $that->callback, $details[0]
                         );
                 });
         }
