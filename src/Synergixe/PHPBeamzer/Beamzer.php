@@ -153,10 +153,10 @@ class Beamzer {
 	    $headers = array(
 		    'Connection' => 'keep-alive', // Instruct/Implore the browser to keep the TCP/IP connection open
 		    'X-Accel-Buffering' => 'no', // Disable FastCGI Buffering on Nginx
-        'Transfer-Encoding' => 'chunked'
+        	    'Transfer-Encoding' => 'chunked'
 	    );
 
-	    //$headers['Keep-Alive'] = 'timeout=' . round(($this->settings['exec_limit'] / 1000), 0, PHP_ROUND_HALF_DOWN) . ', max=1000';
+	    $headers['Keep-Alive'] = 'timeout=' . round(($this->settings['exec_limit'] / 1000), 0, PHP_ROUND_HALF_DOWN) . ', max=1000';
 
 	    if($this->settings['as_cors']){
 	    	$headers = array_merge($headers, $this->cors_headers);
