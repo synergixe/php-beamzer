@@ -152,7 +152,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			
 			    $user = \Auth::user();
 			    
-			    return $streamer->setup(array(
+			    $response = $streamer->setup(array(
 			    	'as_event' => 'activity', // event name to listen for on the client-side
 				'exec_limit' => 3000, // number of milliseconds allowed for streamer to collect data and send to the browser
 				'as_cors' => TRUE // For Cross Origin requests
@@ -164,6 +164,10 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			            )
 			        )
 			    );
+			    
+			    $response->headers->set('Content-Type', 'text/event-stream');
+			    
+			    return $response;
 			}
 ```
 
