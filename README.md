@@ -91,7 +91,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				 	return array();
 				 }
 
-				 $last_id = $request->input('lastEventId', NULL);
+				 $last_id = $request->input('lastEventId');
 				 
 				 if(is_null($last_id)){
 				 
