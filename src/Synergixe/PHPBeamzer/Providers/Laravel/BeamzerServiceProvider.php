@@ -7,14 +7,14 @@
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
- * @license MIT 
+ * @license MIT
  *
  */
 
 namespace Synergixe\PHPBeamzer\Providers\Laravel;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
-use Synergixe\PHPBeamzer\Facades\Streamer as Streamer;
+use Synergixe\PHPBeamzer\Facades\Laravel\Streamer as Streamer;
 use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,11 +36,11 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 */
 
 	public function boot(){
-		
+
 		$this->loadConfig();
 
 		/*if($this->app->runningInConsole()){
-			
+
 			$this->commands([
 				ComposeRedisServiceCommand::class
 			]);
@@ -56,55 +56,56 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	public function register(){
 
-		
-		$this->app->singleton('beamzer', function($app){
-			
+
+		$this->app->singleton(Streamer::class, function($app){
+
 			/*
 				Setup the Last-Event-Id value for the package
 			*/
-		
+
 			$last_event_id = $app->request->query->get('lastEventId');
-			
+
 			/*if(!isset($last_event_id)){
 				 $last_event_id = $app->request->headers->get('LAST_EVENT_ID');
 			}*/
-			
-			if(!isset($last_event_id) 
+
+			if(!isset($last_event_id)
 			   	&& $app->request->hasHeader('Last-Event-ID')){
 				    $last_event_id = $app->request->header('Last-Event-ID', 0);
 			}else{
-			
-				$last_event_id = NULL;
+
+					$last_event_id = NULL;
 			}
-			
+
 			$app->request->query->add(['lastEventId' => $last_event_id]);
-			
+
 			$redis_config = $app->make('config')->get('database.redis');
-			
+
 			$redis = NULL;
-			
-			if((array_key_exists('client', $redis_config)) 
-				&& ($redis_config['client'] === 'predis')){
-				
-				$redis = $app['redis']->connection();
+
+			if((array_key_exists('client', $redis_config))
+				&& ($redis_config['client'] === 'predis')
+					&& class_exists('Predis\Client')){
+
+						$redis = $app['redis']->connection();
 			}
 
 			return Beamzer::createInstance($app->request, $redis);
 		});
 
-		$this->app->alias('beamzer', Streamer::class);
+		$this->app->alias(Streamer::class, Beamzer::class);
 
 	}
-	
+
 	/**
 	     * Get the services provided by the provider.
 	     *
 	     * @return array
 	     */
-	
+
 	    public function provides()
 	    {
-		return ['beamzer', Streamer::class];
+		return [Streamer::class];
 	    }
 
 	/**
@@ -118,7 +119,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 		$this->publishes([
 			$configPath => config_path('beamzer.php')
 		], 'config');
-    	
+
 	}
 
 	/**
