@@ -339,7 +339,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
           beam.start(function onOpen(e){ 
 	  	console.log("SSE connection established!");
 	  }, onfunction onError(e){
-	  	console.log("error: ", e.error);
+	  	console.log("error: ", e);
 	  }, function onMessage(e){
 	  	console.log("message id: ", e.lastEventId);
 	  	console.log("message data: ", e.data);
