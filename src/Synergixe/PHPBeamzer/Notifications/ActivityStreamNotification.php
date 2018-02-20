@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.1
+ * @version v0.1.2
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -13,9 +13,9 @@
 
 namespace Synergixe\PHPBeamzer\Notifications;
 
-/*use Illuminate\Bus\Queueable;*/
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-/*use Illuminate\Contracts\Queue\ShouldQueue;*/
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model as Model;
 use Illuminate\Notifications\Messages\MailMessage;
 
@@ -29,7 +29,7 @@ class ActivityStreamNotification extends Notification /*implements ShouldQueue *
 
   protected $timestamp;
 
-  public function __construct(Model $subject, Model $object, $timestamp){
+  public function __construct(Model $subject, Model $object = NULL, $timestamp = 0){
 
       if(trait_exists('Actionable') || trait_exists('Describable')){
             $traits = class_uses($subject);
@@ -39,12 +39,15 @@ class ActivityStreamNotification extends Notification /*implements ShouldQueue *
             }
       }
     
-      if(trait_exists('Describable')){
-            $traits = class_uses($object);
-        
-            if(!in_array('Describable', $traits)){
-                @trigger_error('Object must be an object with {Describable} traits');
-            }
+    
+      if(!is_null($object)){
+          if(trait_exists('Describable')){
+                $traits = class_uses($object);
+
+                if(!in_array('Describable', $traits)){
+                    @trigger_error('Object must be an object with {Describable} traits');
+                }
+          }
       }
     
       $this->subject = $subject;
@@ -68,11 +71,19 @@ class ActivityStreamNotification extends Notification /*implements ShouldQueue *
   }
 
   public function toDatabase($notifiable){
+    
+    $obj = $this->object;
+    
+    if(!is_null($obj)){
+        $obj = $this->object->getDescription($this->object->id);
+    }else{
+        $obj = 'new notification';
+    }
 
     return [ 
       'subject' => $this->subject->getDescription($this->subject->id),
       'action' => $this->subject->getActionPerformed($this->timestamp),
-      'object' => $this->object->getDescription($this->object->id)
+      'object' => $obj
 
     ];
   }
