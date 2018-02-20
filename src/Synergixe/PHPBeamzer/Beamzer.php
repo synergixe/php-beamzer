@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.1
+ * @version v0.1.2
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -170,15 +170,15 @@ class Beamzer {
                 $that->stream_work();
             };
 
-            $response = new StreamedResponse($stream_work_func);
+            $response = new StreamedResponse($stream_work_func, 200, array());
 
-      	    foreach ($headers as $n => $v) {
+      	    foreach ($headers as $h_name => $h_value) {
 
-      		        $response->headers->set($n, $v);
+      		        $response->headers->set($h_name, $h_value);
 
       	    }
 
-            return $response;
+            return $response->send();
 
         }
 
