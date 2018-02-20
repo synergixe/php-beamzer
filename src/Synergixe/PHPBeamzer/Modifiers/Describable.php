@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.1
+ * @version v0.1.2
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -17,7 +17,7 @@
     
             public function getDescription($id){
             
-                  return is_null($id)? '-' : $id;
+                  return is_null($id) ? '-' : $id;
             }
     
     }
