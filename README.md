@@ -165,8 +165,6 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 			        )
 			    );
 			    
-			    $response->headers->set('Content-Type', 'text/event-stream');
-			    
 			    return $response;
 			}
 ```
@@ -215,7 +213,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 						$user, 
 						$user->tasks()->where(
 							'status', 
-							$request->input('status')
+						  $request->input('status')
 						)->get()
 					);
 					
