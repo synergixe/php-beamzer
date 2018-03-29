@@ -8,9 +8,15 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```bash
 
-		$ composer require synergixe/php-beamzer
+		$ composer require synergixe/php-beamzer:dev-master
 
+```
 
+```json
+	
+	"require": {
+        	"synergixe/php-beamzer": "dev-master"
+    	}
 ```
 
 ### Publish the config for the package to the Laravel config folder
