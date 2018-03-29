@@ -65,7 +65,7 @@
         }
   },
   "scripts": {
-	"pre-install-cmd": "Synergixe\PHPBeamzer\Commands\Composer\InstallSetup::preInstall",
+	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
         "post-package-install": [
             	"@php ./bin/beam-script.php",
 		"@php artisan vendor:publish --tag=config"
