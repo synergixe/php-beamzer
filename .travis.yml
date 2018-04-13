@@ -24,4 +24,8 @@ before_script:
   - travis_retry composer require illuminate/database:${LARAVEL_VERSION} --no-update
   - travis_retry composer install --prefer-source --no-interaction
 
+install: composer install
+
 script: phpunit
+    - vendor/bin/phpunit
+    - vendor/bin/phpstan analyse src tests --level=4
