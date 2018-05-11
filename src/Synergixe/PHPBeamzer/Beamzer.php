@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.2
+ * @version v0.1.3
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -136,7 +136,7 @@ class Beamzer {
 
 			}
 
-		    	$count = intval($this->request->getSession()->get('beamzer:request_count'));
+		    	$count = intval($this->request->session()->get('beamzer:request_count'));
 
 		    	if(!isset($count)){
 				$count = 1;
@@ -145,9 +145,11 @@ class Beamzer {
 			}
 
 		    	$this->req_count = $count;
-		    	$this->request->getSession()->put('beamzer:request_count', $this->req_count);
+		    	$this->request->session()->put('beamzer:request_count', $this->req_count);
             }else{
+		    
                 @trigger_error('Symphony Request object is required to initialize');
+		    // get_last_error();
             }
 
 	    $headers = array(
