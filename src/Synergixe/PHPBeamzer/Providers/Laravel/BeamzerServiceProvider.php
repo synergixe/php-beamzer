@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.2
+ * @version v0.1.3
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -37,14 +37,17 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	public function boot(){
 
-		$this->loadConfig();
+		if($this->app->runningInConsole()){
+		
+			$this->loadConfig();
+			
+		}
 
-		/*if($this->app->runningInConsole()){
-
+		/*
 			$this->commands([
 				ComposeRedisServiceCommand::class
 			]);
-		}*/
+		*/
 	}
 
 
