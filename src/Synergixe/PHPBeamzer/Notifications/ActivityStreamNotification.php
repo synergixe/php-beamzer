@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.2
+ * @version v0.1.3
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -17,11 +17,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model as Model;
-use Illuminate\Notifications\Messages\MailMessage;
+# use Illuminate\Notifications\Messages\MailMessage;
 
-class ActivityStreamNotification extends Notification /*implements ShouldQueue */ {
+class ActivityStreamNotification extends Notification implements ShouldQueue {
 
-  /*use Queueable;*/
+  use Queueable;
 
   protected $subject;
 
@@ -31,20 +31,22 @@ class ActivityStreamNotification extends Notification /*implements ShouldQueue *
 
   public function __construct(Model $subject, Model $object = NULL, $timestamp = 0){
 
-      if(trait_exists('Actionable') || trait_exists('Describable')){
+      if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Actionable') 
+                || trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
             $traits = class_uses($subject);
         
-            if(!in_array(array('Actionable', 'Describable'), $traits)){
+            if(!in_array(array('Synergixe\PHPBeamzer\Modifiers\Actionable', 
+                               'Synergixe\PHPBeamzer\Modifiers\Describable'), $traits)){
                 @trigger_error('Subject must be an object with {Actionable} and {Describable} traits');
             }
       }
     
     
       if(!is_null($object)){
-          if(trait_exists('Describable')){
+          if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
                 $traits = class_uses($object);
 
-                if(!in_array('Describable', $traits)){
+                if(!in_array('Synergixe\PHPBeamzer\Modifiers\Describable', $traits)){
                     @trigger_error('Object must be an object with {Describable} traits');
                 }
           }
@@ -84,7 +86,6 @@ class ActivityStreamNotification extends Notification /*implements ShouldQueue *
       'subject' => $this->subject->getDescription($this->subject->id),
       'action' => $this->subject->getActionPerformed($this->timestamp),
       'object' => $obj
-
     ];
   }
 
