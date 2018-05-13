@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.2
+ * @version v0.1.3
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -22,12 +22,12 @@ class NotificableEvent {
 	 use SerializesModels;
 
 	/**
-	 * @var App\User
+	 * @var \Illuminate\Database\Eloquent\Model
 	 */
 	public $producer = NULL;
 
 	/**
-	 * @var Eloquent\Model
+	 * @var \Illuminate\Database\Eloquent\Model
 	 */
 
 	public $reciever = NULL;
