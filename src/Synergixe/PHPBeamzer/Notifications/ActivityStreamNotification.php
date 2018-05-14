@@ -13,6 +13,7 @@
 
 namespace Synergixe\PHPBeamzer\Notifications;
 
+use Synergixe\PHPBeamzer\Channels\DBPushChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
