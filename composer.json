@@ -28,6 +28,7 @@
 	},
   "require":{
           "php":">=5.6.4",
+	  "nesbot/carbon":"~1.22.0",
           "illuminate/notifications":"~5.4",
           "illuminate/support":"~5.4",
 	  "illuminate/queue":"~5.4",
@@ -68,8 +69,8 @@
   "scripts": {
 	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
         "post-package-install": [
-            	"@php ./bin/beam-script.php",
-		"@php artisan vendor:publish --tag=config"
+            	"php artisan vendor:publish --tag=config",
+		"php artisan make:listener NotificableEventListener",
         ]
   }
 }
