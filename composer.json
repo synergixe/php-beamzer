@@ -70,7 +70,7 @@
 	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
         "post-package-install": [
             	"php artisan vendor:publish --tag=config",
-		"php artisan make:listener NotificableEventListener",
+		"php artisan make:listener NotificableEventListener"
         ]
   }
 }
