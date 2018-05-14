@@ -1,6 +1,6 @@
 # PHPBeamzer
 
-This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4 and 5.5 only (for now). 
+This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4, 5.5 and 5.6 only. 
 
 ## How to Use
 
@@ -24,6 +24,14 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ```bash
 
 		$ php artisan vendor:publish --tag=config
+
+```
+
+### Create the event listener to be used with the nofication custom event provided by the package
+
+```bash
+
+		$ php artisan make:listener NotificableEventListener
 
 ```
 
@@ -218,7 +226,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					$event = new NotificableEvent(
 						$user, 
 						$user->tasks()->where(
-							'status', 
+							'status', '=',
 						  $request->input('status')
 						)->get()
 					);
@@ -369,11 +377,11 @@ MIT
 
 It isn't absolutely necessary but you can use this library with its front end component library called [beamzer-client](https://github.com/isocroft/beamzer-client/). This front end library support the follwoing browsers:
 
-- IE 8.0+
+- IE 9.0+
 - FF 4.0+
 - Opera 10.5+
-- Chrome 3.0+
-- Safari 5.0+
+- Chrome 4.0+
+- Safari 7.0+
 
 ## Contributing
 
