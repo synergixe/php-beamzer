@@ -100,8 +100,8 @@ class BeamzerServiceProvider extends ServiceProvider {
 	protected function registerCommands(){
 	
 		$this->commands([
-				ComposeRedisServiceCommand::class,
-				Laravel
+			ComposeRedisServiceCommand::class,
+			LaravelNotificationLoadCommand::class
 		]);
 	}
 
