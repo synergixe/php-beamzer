@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.3
+ * @version v0.1.6
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -25,7 +25,7 @@ trait Actionable {
     
 		$this->actions_perfomed[$timestamp] = $user_action;
 
-    return $this;
+    		return $this;
 	}
   
 	public function getActionPerformed($timestamp){
