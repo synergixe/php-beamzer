@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.3
+ * @version v0.1.6
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -42,12 +42,6 @@ class BeamzerServiceProvider extends ServiceProvider {
 			$this->loadConfig();
 			
 		}
-
-		/*
-			$this->commands([
-				ComposeRedisServiceCommand::class
-			]);
-		*/
 	}
 
 
@@ -58,7 +52,8 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 */
 
 	public function register(){
-
+		
+		$this->mergeConfig();
 
 		$this->app->singleton(Streamer::class, function($app){
 
@@ -97,7 +92,17 @@ class BeamzerServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->alias(Streamer::class, Beamzer::class);
+		
+		$this->registerCommands();
 
+	}
+	
+	protected function registerCommands(){
+	
+		$this->commands([
+				ComposeRedisServiceCommand::class,
+				Laravel
+		]);
 	}
 
 	/**
@@ -110,8 +115,19 @@ class BeamzerServiceProvider extends ServiceProvider {
 	    {
 		return [Streamer::class];
 	    }
+	
+	/**
+     	* Merge configurations.
+     	*/
+    	
+	protected function mergeConfig()
+    	{
+		
+		$this->mergeConfigFrom(__DIR__.'/../../../../../config/beamzer.php', 'beamzer');
+    	}
 
 	/**
+	 * Load Configurations
 	 *
 	 */
 
