@@ -1,7 +1,7 @@
 {
   "name": "synergixe/php-beamzer",
   "description": "This is a library that provides support for real-time feeds and notifications for PHP web applications",
-   "version":"0.1.5",
+   "version":"0.1.6",
    "keywords": [
 		"ajax long polling", 
 		"server-sent events",
@@ -70,7 +70,7 @@
 	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
         "post-package-install": [
             	"php artisan vendor:publish --tag=config",
-		"php artisan make:listener NotificableEventListener"
+		"php artisan create:file"
         ]
   }
 }
