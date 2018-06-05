@@ -19,6 +19,8 @@ use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServ
 use Illuminate\Support\ServiceProvider;
 
 class BeamzerServiceProvider extends ServiceProvider {
+	
+	const VERSION = '0.1.6';
 
 	/**
 	 * Indicates if loading of the provider is deferred
@@ -142,6 +144,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 *
 	 *
 	 */
 
