@@ -8,14 +8,14 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```bash
 
-		$ composer require synergixe/php-beamzer:dev-master
+		$ composer require synergixe/php-beamzer:^1.0
 
 ```
 
 ```json
 	
 	"require": {
-        	"synergixe/php-beamzer": "dev-master"
+        	"synergixe/php-beamzer": "^1.0"
     	}
 ```
 
@@ -27,11 +27,11 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```
 
-### Create the event listener to be used with the nofication custom event provided by the package
+### Create the event listener to be used with the nofication custom event using the custom command provided by the package
 
 ```bash
 
-		$ php artisan make:listener NotificableEventListener
+		$ php artisan create:notificationfile
 
 ```
 
