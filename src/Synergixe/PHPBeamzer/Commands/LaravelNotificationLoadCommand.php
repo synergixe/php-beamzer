@@ -24,7 +24,7 @@ class LaravelNotificationLoadCommand extends Command {
  	 * @var string
 	 */
 
-	protected $signature = 'create:file';
+	protected $signature = 'create:notificationfile';
 
 
 	/**
@@ -47,7 +47,7 @@ class LaravelNotificationLoadCommand extends Command {
 
 		if(file_exists($file) && is_readable($file)){
 
-			$this->info('Quick Tip: Go and Update Events Service Provider File To Correctly Listen For Events');
+			$this->info('Todo: Go and Update Events Service Provider File To Correctly Listen For PHP-Beamzer Events :)');
 
 		}
 	}
