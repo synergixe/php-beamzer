@@ -69,8 +69,7 @@
   "scripts": {
 	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
         "post-package-install": [
-            	"php artisan vendor:publish --tag=config",
-		"php artisan create:file"
+            	"@php artisan vendor:publish --tag=config"
         ]
   }
 }
