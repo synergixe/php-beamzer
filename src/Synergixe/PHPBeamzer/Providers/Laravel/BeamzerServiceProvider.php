@@ -124,6 +124,14 @@ class BeamzerServiceProvider extends ServiceProvider {
     	
 	protected function mergeConfig()
     	{
+		$app = $this->app;
+		
+		/*if($app instanceof LaravelApplication
+		  	&& $app->runningInConsole()){
+			;
+		}else if($app instanceof LumenApplication){
+			$app->configure('beamzer');
+		}*/
 		
 		$this->mergeConfigFrom(__DIR__.'/../../../../../config/beamzer.php', 'beamzer');
     	}
