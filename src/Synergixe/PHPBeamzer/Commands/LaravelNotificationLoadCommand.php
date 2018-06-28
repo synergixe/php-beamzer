@@ -14,6 +14,8 @@
 namespace Synergixe\PHPBeamzer\Commands;
 
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Process\Process;
 use Illuminate\Console\Command;
 
 
