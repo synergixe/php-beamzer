@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.6
+ * @version v0.1.7
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -80,14 +80,15 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     $obj = $this->object;
     
     if(!is_null($obj)){
-        $obj = $this->object->getDescription($this->object->id);
+        $obj = $this->object->getDescription($this->object->{$this->object->getKeyName()});
     }else{
         $obj = 'new notification';
     }
 
     return [ 
-      'subject' => $this->subject->getDescription($this->subject->id),
+      'subject' => $this->subject->getDescription($this->subject->{$this->subject->getKeyName()}),
       'action' => $this->subject->getActionPerformed($this->timestamp),
+      'unix_time' => $this->timestamp,
       'object' => $obj
     ];
   }
