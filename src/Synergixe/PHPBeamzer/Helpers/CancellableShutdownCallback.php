@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.3
+ * @version v0.1.7
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *

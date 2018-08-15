@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.6
+ * @version v0.1.7
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -17,6 +17,7 @@ use Igorw\EventSource\Stream as Stream;
 use Illuminate\Redis\Connections\Connection as RedisConnection;
 use Symfony\Component\HttpFoundation\StreamedResponse as StreamedResponse;
 use Symfony\Component\HttpFoundation\Request as Request;
+use Synergixe\PHPBeamzer\Helpers\BufferBustingEchoHandler;
 use Synergixe\PHPBeamzer\Helpers\CancellableShutdownCallback as CancellableShutdownCallback;
 
 class Beamzer {
@@ -65,7 +66,7 @@ class Beamzer {
 		    'as_event' => '',
 		    'ignore_id' => FALSE,
 		    'exec_limit' => 900,
-		    'as_cors' => FALSE,
+		    'as_cors' => TRUE,
 		    'is_ie' => FALSE
 	    );
 
@@ -154,8 +155,7 @@ class Beamzer {
 
 	    $headers = array(
 		    'Connection' => 'keep-alive', // Instruct/Implore the browser to keep the TCP/IP connection open
-		    'X-Accel-Buffering' => 'no', // Disable FastCGI Buffering on Nginx
-        	    'Transfer-Encoding' => 'chunked'
+		    'X-Accel-Buffering' => 'no' // Disable FastCGI Buffering on Nginx
 	    );
 
 	    $headers['Keep-Alive'] = 'timeout=' . round(($this->settings['exec_limit'] / 1000), 0, PHP_ROUND_HALF_DOWN) . ', max=1000';
@@ -172,7 +172,7 @@ class Beamzer {
                 $that->stream_work();
             };
 
-            $response = new StreamedResponse($stream_work_func, 200, array());
+            $response = new StreamedResponse($stream_work_func, 200);
 
       	    foreach ($headers as $h_name => $h_value) {
 
@@ -237,8 +237,7 @@ class Beamzer {
 			    }
 
 			$event->setData($payload)
-				    ->end()
-					     ->flush();
+				    ->flush();
 		});
 
 	}
@@ -261,7 +260,7 @@ class Beamzer {
 				the PHP shutdown function so that no data is sent
 			*/
 
-      $is_ua_disconnected = (bool) connection_aborted();
+     			$is_ua_disconnected = (bool) connection_aborted();
 
 			if($is_ua_disconnected){
 
@@ -330,7 +329,7 @@ class Beamzer {
 
 					$this->req_count = 0;
 			    		$this->request->getSession()->put('beamzer:request_count', $this->req_count);
-	    	}
+	    		}
 
 				/*
 					We had initially set the `Connection` response header to 'keep-alive'
@@ -349,8 +348,7 @@ class Beamzer {
 					See: https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 				*/
 				$event->addComment(sha1(mt_rand()))
-						->end()
-						   ->flush();
+						->flush();
 
 				continue;
 
@@ -386,8 +384,7 @@ class Beamzer {
 				$event->setData(
 					json_encode(
 						array_shift($chunks)
-					))->end()
-						->flush();
+					))->flush();
 			}
 
 			$noupdate = TRUE;
