@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.6
+ * @version v0.1.7
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -126,12 +126,12 @@ class BeamzerServiceProvider extends ServiceProvider {
     	{
 		$app = $this->app;
 		
-		/*if($app instanceof LaravelApplication
+		if($app instanceof LaravelApplication
 		  	&& $app->runningInConsole()){
 			;
 		}else if($app instanceof LumenApplication){
 			$app->configure('beamzer');
-		}*/
+		}
 		
 		$this->mergeConfigFrom(__DIR__.'/../../../../../config/beamzer.php', 'beamzer');
     	}
