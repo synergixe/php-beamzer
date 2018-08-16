@@ -35,10 +35,7 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
       if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Actionable') 
                 || trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
         
-            $traits = class_uses($subject);
-        
-            if(!in_array(array('Synergixe\PHPBeamzer\Modifiers\Actionable', 
-                               'Synergixe\PHPBeamzer\Modifiers\Describable'), $traits)){
+            if(object_uses_trait($subject, 'Synergixe\PHPBeamzer\Modifiers\Actionable')){
                 @trigger_error('Subject must be an object with {Actionable} and {Describable} traits');
             }
       }
@@ -46,10 +43,8 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     
       if(!is_null($object)){
           if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
-            
-                $traits = class_uses($object);
 
-                if(!in_array('Synergixe\PHPBeamzer\Modifiers\Describable', $traits)){
+                if(object_uses_trait($object, 'Synergixe\PHPBeamzer\Modifiers\Describable')){
                     @trigger_error('Object must be an object with {Describable} traits');
                 }
           }
