@@ -8,14 +8,14 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 ```bash
 
-		$ composer require synergixe/php-beamzer:^1.0
+		$ composer require synergixe/php-beamzer:^0.1
 
 ```
 
 ```json
 	
 	"require": {
-        	"synergixe/php-beamzer": "^1.0"
+        	"synergixe/php-beamzer": "^0.1"
     	}
 ```
 
@@ -249,7 +249,9 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			class User extends Eloquent {
 
-				use Notifiable, Actionable, Describable;
+				use Notifiable, Actionable, Describable {
+					getDecription as getDesc
+				};
 				
 				public function routeNotificationForMail(){
        
