@@ -14,13 +14,17 @@
 namespace Synergixe\PHPBeamzer\Providers\Laravel;
 
 use Synergixe\PHPBeamzer\Beamzer as Beamzer;
+use Laravel\Lumen\Application as LumenApplication;
+use Illuminate\Foundation\Application as LaravelApplication;
 use Synergixe\PHPBeamzer\Facades\Laravel\Streamer as Streamer;
 use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
 use Illuminate\Support\ServiceProvider;
 
+use ReflectionClass;
+
 class BeamzerServiceProvider extends ServiceProvider {
 	
-	const VERSION = '0.1.6';
+	const VERSION = '0.1.7';
 
 	/**
 	 * Indicates if loading of the provider is deferred
@@ -54,8 +58,6 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 */
 
 	public function register(){
-		
-		$this->mergeConfig();
 
 		$this->app->singleton(Streamer::class, function($app){
 
@@ -119,21 +121,23 @@ class BeamzerServiceProvider extends ServiceProvider {
 	    }
 	
 	/**
-     	* Merge configurations.
+     	* Setup configurations.
      	*/
     	
-	protected function mergeConfig()
+	protected function setupConfig()
     	{
 		$app = $this->app;
 		
+		$src_path = realpath($raw = __DIR__.'/../../../../../config/beamzer.php') ?: $raw;
+		
 		if($app instanceof LaravelApplication
 		  	&& $app->runningInConsole()){
-			;
+			$this->loadConfig($src_path);
 		}else if($app instanceof LumenApplication){
 			$app->configure('beamzer');
 		}
 		
-		$this->mergeConfigFrom(__DIR__.'/../../../../../config/beamzer.php', 'beamzer');
+		$this->mergeConfigFrom($src_path, 'beamzer');
     	}
 
 	/**
@@ -141,9 +145,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 	 *
 	 */
 
-	private function loadConfig(){
-
-		$configPath = __DIR__.'/../../../../../config/beamzer.php';
+	private function loadConfig($configPath){
 
 		$this->publishes([
 			$configPath => config_path('beamzer.php')
@@ -153,7 +155,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	/**
 	 *
-	 *
+	 * Load Migrations
 	 */
 
 	private function loadMigrations(){
