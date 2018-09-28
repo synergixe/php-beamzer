@@ -33,7 +33,7 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
 
   protected $timestamp;
 
-  public function __construct(Model $subject, Model $object = NULL, $timestamp = 0){
+  public function __construct(Model $subject, Model $object = NULL, $timestamp, $kind){
 
         
             if(! object_uses_trait($subject, Actionable::class)
@@ -47,6 +47,10 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     
             $this->subject = $subject;
             $this->object = $object;
+    
+            $this->subject->setDescription($kind);
+            $this->object->setDescription($kind);
+    
             $this->timestamp = $timestamp;
 
   }
