@@ -43,11 +43,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 
 	public function boot(){
 
-		if($this->app->runningInConsole()){
-		
-			$this->loadConfig();
-			
-		}
+		$this->setupConfig();
 	}
 
 
