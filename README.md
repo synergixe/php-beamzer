@@ -262,6 +262,12 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 				use Notifiable, Actionable, Describable;
 				
+				/* create the `actionsPerfomed` property for trait { Actionable } */
+				
+				protected $actionsPerfomed = array(
+					"follows" => 'asked to follow you'
+				);
+				
 				public function routeNotificationForMail(){
        
        					return $this->email_address;
@@ -269,7 +275,10 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				
 				public function followings(){ // relation for all `followings`
 				
-					return $this->belongsToMany();
+					return $this->belongsToMany(User::class,
+						    'social_network_follows',
+						    'followee_id', 'follower_id', 'id', 'id', 'followings'
+					)->withTimestamps();
 				}
 				
 				/* create the `makeDescription` method for trait { Describable } */
