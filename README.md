@@ -210,6 +210,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			/* In app/Http/Controllers/MessageController.php */
 			
+			use Illuminate\Http\Request;
 			use Synergixe\PHPBeamzer\Events\NotificableEvent as NotificableEvent;
 
 			class MessageController extends Controller {
@@ -220,20 +221,30 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 				}		
 				
 				public function fireNotificationEvent(Request $request, $kind) {
-
-					$user = \Auth::user();
+					$event = null;
 					
-					$event = new NotificableEvent(
-						$user, 
-						$user->tasks()->where(
-							'status', '=',
-						  $request->input('status')
-						)->get()
-					);
-					
-					$event->setKind($kind);
+					switch($kind){
+						case "follows":
+							$user = \Auth::user();
+							$followee = User::where('id', '=', $request->input('followee_id'));
 
-					event($event);
+							$follow = $user->followings()->save([
+								'follower_id' => $user->id,
+								'followee_id' => $followee->id
+							]);
+
+							$event = new NotificableEvent(
+								$user, 
+								$followee
+							);
+						break;
+					}
+				
+					if(! is_null($event)){
+						$event->setKind($kind);
+					
+						event($event);
+					}
 				}
 			}
 ```
@@ -249,27 +260,31 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 			class User extends Eloquent {
 
-				use Notifiable, Actionable, Describable {
-					getDecription as getDesc
-				};
+				use Notifiable, Actionable, Describable;
 				
 				public function routeNotificationForMail(){
        
        					return $this->email_address;
     				}
 				
-				/* Override the `getDescription` method from trait { Describable } */
+				public function followings(){ // relation for all `followings`
 				
-				public function getDecription($id){
+					return $this->belongsToMany();
+				}
+				
+				/* create the `makeDescription` method for trait { Describable } */
+				
+				public function makeDecription(){
 				
 					/* 
 						This can be used to describe the subject/object each
 						time on the client-side in your notifications
 						 list when rendered in HTML
 					*/
+					
 					return array(
 						'name' => ($this->last_name . " " . $this->first_name),
-						'id' => (is_null($id)? $this->uid : $id)
+						'id' => $this->id
 					);
 				}
 			}
@@ -295,6 +310,8 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 				public function handle(NotificableEvent $event){
 				
+					$event->wakeUp();
+				
 					$event_kind = $event->getKind();
 
 					/* 
@@ -310,20 +327,17 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 					switch($event_kind){
 					
 						case "follows":
-							$user->followers()->get()->each(function($follower, $index) use ($event) {
-								$follower->notify(
+						
+							$event->reciever->notify(
 								new ActivityStreamNotification(
-									$event->producer->setActionPerformed(
-										'asked to follow', 
-										$event->timing
-									),
+									$event->producer,
 									$event->reciever,
-									$event->timing
+									$event->timstamp,
+									$event_kind
 								)
-							    )->delay(
+							)->delay(
 								\Carbon::now()->addMinutes(5);
-							    );
-							});
+							);
 						break;
 					}
 				}
