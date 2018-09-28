@@ -17,9 +17,9 @@ trait Actionable {
   
 	public function getActionPerformed($kind){
     
-		return property_exists($this, 'actions_perfomed')
-				&& array_key_exists($kind, $this->actions_performed)
-			 ? $this->actions_perfomed[$kind] 
+		return property_exists($this, 'actionsPerfomed')
+				&& array_key_exists($kind, $this->actionsPerfomed)
+			 ? $this->actionsPerfomed[$kind] 
       
 			 : 'interected with'
 		);
