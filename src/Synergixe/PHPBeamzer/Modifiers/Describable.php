@@ -15,9 +15,24 @@
 
   trait Describable {
     
-            public function getDescription($id){
+            protected $notification_desc;
+    
+            public function setDescription($event_kind){
+              
+                  if(! $this->exists){
+                      $this->notification_desc = null;
+                      return;
+                  }
             
-                  return is_null($id) ? '-' : $id;
+                  if(method_exists($this, 'makeDescription')){
+                        $this->notification_desc = $this->makeDescription($event_kind);
+                  }
+    
+            }
+    
+            public function getDescription(){
+            
+                  return $this->notification_desc;
             }
     
     }
