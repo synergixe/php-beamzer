@@ -1,6 +1,17 @@
 
 <?php
 
+/**
+ * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
+ *
+ * @version v0.1.7
+ *
+ * @author Ifeora Okechukwu (https://twitter.com/isocroft)
+ *
+ * @license MIT 
+ *
+ */
+
 if(! function_exists('object_uses_trait')){
 	/**
 	 * @See: https://eliasvo.wordpress.com/2015/06/07/php-traits-if-they-werent-evil-theyd-be-funny/
@@ -12,9 +23,18 @@ if(! function_exists('object_uses_trait')){
 	 */
 	
 	function object_uses_trait($object, $trait){
-		// check arguments
+		
+		// check if trait class actually exists and if the object is set
+		if(! trait_exists($trait) || is_null($object)){
+			return false;
+		}
+		
+		// check if the class uses the trait in it's definition
 		$used = class_uses($object);
-		if(!isset($used[$trait])){
+		
+		// short_class_name($trait);
+		
+		if(! isset($used[$trait])){
 			$parents = class_parents($object);
 			while(!isset($used[$trait])
 			     	&& $parents){
@@ -28,25 +48,16 @@ if(! function_exists('object_uses_trait')){
 	
 }
 
-/*if(! function_exists('is_actionable')){
 
-	function is_actionable($class_name, $key){
+if(! function_exists('short_class_name')){
+
+	function short_class_name($class_name){
 		
 		$short_name = (substr($class_name, strrpos($class_name, '\\') + 1));
 		
-		return ($short_name === 'Actionable');
+		return $short_name;
 	}
 }
-
-if(! function_exists('is_describable')){
-
-	function is_describable($class_name, $key){
-		
-		$short_name = (substr($class_name, strrpos($class_name, '\\') + 1));
-		
-		return ($short_name === 'Describable');
-	}
-}*/
 
 if(! function_exists('cancel_shutdown_function') ){
 	function cancel_shutdown_function($envelope){
@@ -57,13 +68,14 @@ if(! function_exists('cancel_shutdown_function') ){
 }
 
 if(! function_exists('normalize_laravel_notifications') ){
-  function normalize_laravel_notifications ($_row){
-	  
-	 $row = is_array($_row) ? $_row : array('data'=>'[]','id'=>'','created_at'=>'','read_at'=>NULL);
-	  
-	  $item = array();
 	
-	  $item['payload'] = @json_decode($row['data'], TRUE);
+  function normalize_laravel_notifications($_row){
+	  
+	$row = is_array($_row) ? $_row : array('data'=>'[]','id'=>'','created_at'=>'','read_at'=>NULL);
+	  
+  	$item = array();
+	
+  	$item['payload'] = @json_decode($row['data'], TRUE);
 	  
 	$item['nid'] = $row['id'];
 	$item['timing'] = $row['created_at'];
