@@ -319,7 +319,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 
 				public function handle(NotificableEvent $event){
 				
-					$event->wakeUp();
+					$event->__wakeup();
 				
 					$event_kind = $event->getKind();
 
