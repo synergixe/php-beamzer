@@ -15,27 +15,13 @@ namespace Synergixe\PHPBeamzer\Modifiers;
 
 trait Actionable {
   
-	public $no_buzz = FALSE;
-  
-	private $actions_perfomed = array();
-  
-	public function setActionPerformed($user_action = 'did', $timestamp) {
+	public function getActionPerformed($kind){
     
-		$timestamp = strval($timestamp);
-    
-		$this->actions_perfomed[$timestamp] = $user_action;
-
-    		return $this;
-	}
-  
-	public function getActionPerformed($timestamp){
-    
-		return (
-				array_key_exists($timestamp, $this->actions_perfomed)
+		return property_exists($this, 'actions_perfomed')
+				&& array_key_exists($kind, $this->actions_performed)
+			 ? $this->actions_perfomed[$kind] 
       
-			 ? $this->actions_perfomed[$timestamp] 
-      
-			 : NULL
+			 : 'interected with'
 		);
     
 	}
