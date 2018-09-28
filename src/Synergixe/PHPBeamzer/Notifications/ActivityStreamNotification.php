@@ -18,6 +18,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model as Model;
+use Synergixe\PHPBeamzer\Modifiers\Actionable;
+use Synergixe\PHPBeamzer\Modifiers\Describable;
+
 # use Illuminate\Notifications\Messages\MailMessage;
 
 class ActivityStreamNotification extends Notification implements ShouldQueue {
@@ -32,29 +35,19 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
 
   public function __construct(Model $subject, Model $object = NULL, $timestamp = 0){
 
-      if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Actionable') 
-                || trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
         
-            if(object_uses_trait($subject, 'Synergixe\PHPBeamzer\Modifiers\Actionable')){
+            if(! object_uses_trait($subject, Actionable::class)
+                  || ! object_uses_trait($subject, Describable::class)){
                 @trigger_error('Subject must be an object with {Actionable} and {Describable} traits');
             }
-      }
-    
-    
-      if(!is_null($object)){
-          if(trait_exists('Synergixe\PHPBeamzer\Modifiers\Describable')){
-
-                if(object_uses_trait($object, 'Synergixe\PHPBeamzer\Modifiers\Describable')){
+      
+            if(! object_uses_trait($object, Describable::class)){
                     @trigger_error('Object must be an object with {Describable} traits');
-                }
-          }
-      }
+            }
     
-      $this->subject = $subject;
-
-      $this->object = $object;
-
-      $this->timestamp = $timestamp;
+            $this->subject = $subject;
+            $this->object = $object;
+            $this->timestamp = $timestamp;
 
   }
 
@@ -65,46 +58,36 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     
         return isset($notifiable->no_buzz) && $notifiable->no_buzz === TRUE 
                       ? [DBPushChannel::class] 
-                      : ['mail', 'database']; */
+                      : ['mail', 'database']; 
+    */
     
         return ['database'];
   }
 
   public function toDatabase($notifiable){
     
-    $obj = $this->object;
+        $object = $this->object->getDescription();
+        $subject = $this->subject->getDescription();
     
-    if(!is_null($obj)){
-        $obj = $this->object->getDescription($this->object->{$this->object->getKeyName()});
-    }else{
-        $obj = 'new notification';
-    }
-
-    return [ 
-      'subject' => $this->subject->getDescription($this->subject->{$this->subject->getKeyName()}),
-      'action' => $this->subject->getActionPerformed($this->timestamp),
-      'unix_time' => $this->timestamp,
-      'object' => $obj
-    ];
+        return [ 
+          'subject' => $subject,
+          'action' => $this->subject->getActionPerformed($this->timestamp),
+          'unix_timestamp' => $this->timestamp,
+          'object' => $object
+        ];
   }
 
-  /*
-       This will be enabled on the next version
   
-        public function toMail($notifiable){
-             if($notifiable->notifySuccessful('?')){ 
-                 return (new MailMessage)->view(
-                    'activity.mail', ['object' => $this->object]
-                  );
-             }else{
-                  return  (new MailMessage)->error()
-                      ->subject('Notification Subject')
-                      ->line('...')
-                      ->action('View Content', $this->object->getUrl())
-                        ->line('***');
-             }
-        }
-   */
+  public function toMail($notifiable){
+    
+        return  (new MailMessage)
+                ->greeting('Hello '. $notifiable->getDescription() .'!')
+                ->subject('Notification Alert')
+                ->line('You have a new notification from ' . config('app.name'))
+                /*->action('View Detail', $this->object->getUrl())*/
+                ->line('Thank you for using our application');
+             
+  }
 }
 
 ?>
