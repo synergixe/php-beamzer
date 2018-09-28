@@ -28,6 +28,8 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
   use Queueable;
 
   protected $subject;
+  
+  protected $verb;
 
   protected $object;
 
@@ -48,10 +50,11 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
             $this->subject = $subject;
             $this->object = $object;
     
+            $this->verb = $this->subject->getActionPerformed(
+										$kind
+            );
             $this->subject->setDescription($kind);
             $this->object->setDescription($kind);
-    
-            $this->timestamp = $timestamp;
 
   }
 
@@ -75,7 +78,7 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     
         return [ 
           'subject' => $subject,
-          'action' => $this->subject->getActionPerformed($this->timestamp),
+          'action' => $this->verb,
           'unix_timestamp' => $this->timestamp,
           'object' => $object
         ];
