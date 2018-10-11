@@ -33,7 +33,7 @@ class  SynergixeTestCase extends OrchestraTestCase{
       
     }
     
-    /*public function mock($class){
+    public function mock($class){
         
         $mock = Mockery::mock($class);
         
@@ -41,7 +41,7 @@ class  SynergixeTestCase extends OrchestraTestCase{
         
         return $mock;
         
-    }*/
+    }
 }
 
 ?>
