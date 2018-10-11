@@ -13,11 +13,12 @@ class CreateStreamNotificaitionTable extends Migration {
      */
     public function up(){
     
-        Schema::create('stream_notifications', function (Blueprint $table){
-            $table->('id');
-            $table->text('data');
+        Schema::create('tbl_stream_notifications', function (Blueprint $table){
+            $table->char('id', 36)->primary();
             $table->string('type', 220);
-            $table->datetime('read_at');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ class CreateStreamNotificaitionTable extends Migration {
      */
     public function down(){
     
-        Schema::drop('stream_notifications');
+        Schema::drop('tbl_stream_notifications');
     }
 }
