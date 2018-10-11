@@ -22,7 +22,7 @@ class SynNotification extends DatabaseNotification {
      *
      * @var string
      */
-    protected $table = 'syn_notifications';
+    protected $table = 'tbl_stream_notifications';
     
     public function getActivitySubject(){
       
