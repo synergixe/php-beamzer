@@ -94,6 +94,10 @@ class BeamzerServiceProvider extends ServiceProvider {
 		$this->app->alias(Streamer::class, Beamzer::class);
 		
 		$this->registerCommands();
+		
+		$raw = __DIR__.'/../../../../../config/beamzer.php';
+		
+		$this->configure($raw);
 
 	}
 	
@@ -132,8 +136,6 @@ class BeamzerServiceProvider extends ServiceProvider {
 		}else if($app instanceof LumenApplication){
 			$app->configure('beamzer');
 		}
-		
-		$this->mergeConfigFrom($src_path, 'beamzer');
     	}
 
 	/**
@@ -147,6 +149,11 @@ class BeamzerServiceProvider extends ServiceProvider {
 			$configPath => config_path('beamzer.php')
 		], 'config');
 
+	}
+	
+	private function configure($src_path){
+	
+		$this->mergeConfigFrom($src_path, 'beamzer');
 	}
 
 	/**
