@@ -133,6 +133,7 @@ class BeamzerServiceProvider extends ServiceProvider {
 		if($app instanceof LaravelApplication
 		  	&& $app->runningInConsole()){
 			$this->loadConfig($src_path);
+			$this->loadMigrations();
 		}else if($app instanceof LumenApplication){
 			$app->configure('beamzer');
 		}
