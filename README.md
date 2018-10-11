@@ -33,21 +33,48 @@ php artisan vendor:publish --provider="Synergixe\Beamzer\Providers\Laravel\Beamz
 
 ```php
 
-	return [
+return [
 	    /*
 	    |--------------------------------------------------------------------------
-	    | The id of project created in the Google Cloud Platform console.
+	    | The timeout value for when Beamzer should stop trying tofetch data (milliseconds)
 	    |--------------------------------------------------------------------------
 	    */
-	    'project_id' => env('NATURAL_LANGUAGE_PROJECT_ID', 'sample-12345'),
+	
+	'ping' => env('BEAMZER_PING_TIMEOUT', '3000'),
+	    /*
+	    |--------------------------------------------------------------------------
+	    | To support IE 8/9 or not when sending data back to the client.
+	    |--------------------------------------------------------------------------
+	    */
+	
+	'support_old_ie' => TRUE,
+	    /*
+	    |--------------------------------------------------------------------------
+	    | Number of times before the client should retry an SSE connection.
+	    |--------------------------------------------------------------------------
+	    */
+	
+	'retry_limit_count' => 10,
+	    /*
+	    |--------------------------------------------------------------------------
+	    | To use or not to use Redis.
+	    |--------------------------------------------------------------------------
+	    */
+	'use_redis' => FALSE,
+	    /*
+	    |--------------------------------------------------------------------------
+	    | redis publish channel name.
+	    |--------------------------------------------------------------------------
+	    */
+	'redis_pub_channel' => 'notifications',
+	    /*
+	    |--------------------------------------------------------------------------
+	    | The size of data sent back to the client per connection.
+	    |--------------------------------------------------------------------------
+	    */
+	'data_chunks_size' => 5
 
-	    /*
-	    |--------------------------------------------------------------------------
-	    | Path to the json file containing the authentication credentials.
-	    |--------------------------------------------------------------------------
-	    */
-	    'key_file_path' => base_path('composer.json'),
-	];
+];
 ```
 
 ### Create the event listener to be used with the nofication custom event using the custom command provided by the package
