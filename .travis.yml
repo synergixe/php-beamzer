@@ -33,5 +33,4 @@ before_script:
   - composer dumpautoload -o
    
 script:
-    - phpstan analyse src tests --level=2
     - phpunit
