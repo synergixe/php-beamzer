@@ -16,9 +16,29 @@
 use Illuminate\Notifications\DatabaseNotification;
 
 class SynNotification extends DatabaseNotification {
+ 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'syn_notifications';
     
-    public function morphsToMany(){
+    public function getActivitySubject(){
       
-      ;
+         if(! $this->exists){
+              return null;
+         }
+     
+         return $this->data['subject'];
+    }
+ 
+    public function getActivityVerb(){
+      
+         if(! $this->exists){
+              return null;
+         }
+     
+         return $this->data['verb'];
     }
 }
