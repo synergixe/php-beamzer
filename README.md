@@ -1,8 +1,8 @@
 # PHPBeamzer
 
-[![Latest Version](https://img.shields.io/github/release/synergixe/php-beamzer.svg?style=flat-rounded)](https://github.com/JoggApp/laravel-natural-language/releases)
+[![Latest Version](https://img.shields.io/github/release/synergixe/php-beamzer.svg?style=flat-rounded)](https://github.com/synergixe/php-beamzer/releases)
 [![Build Status](https://travis-ci.org/synergixe/php-beamzer.svg?branch=master)](https://travis-ci.org/JoggApp/laravel-natural-language)
-[![Total Downloads](https://img.shields.io/packagist/dt/synergixe/php-beamzer.svg?style=flat-rounded&colorB=brightgreen)](https://packagist.org/packages/JoggApp/laravel-natural-language)
+[![Total Downloads](https://img.shields.io/packagist/dt/synergixe/php-beamzer.svg?style=flat-rounded&colorB=brightgreen)](https://packagist.org/packages/synergixe/php-beamzer)
 
 This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4, 5.5, 5.6 and 5.7 only. 
 
@@ -29,7 +29,7 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 php artisan vendor:publish --provider="Synergixe\Beamzer\Providers\Laravel\BeamzerServiceProvider"
 ```
 
-## This will create the package's config file called `beamzer.php` in the `config` directory of your Laravel Project. These are the contents of the published config file:
+#### This will create the package's config file called `beamzer.php` in the `config` directory of your Laravel Project. These are the contents of the published config file:
 
 ```php
 
