@@ -10,13 +10,13 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Beamzer Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Beamzer Tests">
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
         </whitelist>
     </filter>
 </phpunit>
