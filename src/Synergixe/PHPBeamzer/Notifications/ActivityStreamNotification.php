@@ -49,6 +49,7 @@ class ActivityStreamNotification extends Notification implements ShouldQueue {
     
             $this->subject = $subject;
             $this->object = $object;
+	    $this->timestamp = $timestamp;
     
             $this->verb = $this->subject->getActionPerformed(
 		$kind
