@@ -22,11 +22,10 @@
     "require-dev": {
            "mockery/mockery":"^1.0",
            "orchestra/testbench":"^3.4",
-           "phpunit/phpunit":"^5.7|^7.0",
-	   "phpstan/phpstan":"0.9.*",
+           "phpunit/phpunit":"^5.7 || ^7.0",
 	   "friendsofphp/php-cs-fixer": "^2.5"
-	},
-  "require":{
+    },
+    "require":{
           "php":">=5.6.4",
 	  "nesbot/carbon":"^1.22",
           "illuminate/notifications":"^5.4",
@@ -36,27 +35,27 @@
 	  "illuminate/database":"^5.4",
           "igorw/event-source":"~1.0",
           "illuminate/console":"^5.4",
-          "symfony/http-foundation":"^3.3|^4.1"
-  },
-  "autoload": {
+          "symfony/http-foundation":"^3.3 || ^4.1"
+    },
+    "autoload": {
 	"psr-4": {
 		"Synergixe\\PHPBeamzer\\": "src/Synergixe/PHPBeamzer"
 	},
 	"files": [
 		"src/function.php"
 	]
-  },
-  "autoload-dev": {
+    },
+    "autoload-dev": {
           "psr-4":{
                 "Synergixe\\PHPBeamzer\\Test\\":"tests"
           }
-  },
- "config":{
+    },
+    "config":{
 	  "sort-packages":true
- },
- "minimum-stability":"dev",
-  "prefer-stable":false,
-  "extra": {
+    },
+    "minimum-stability":"dev",
+    "prefer-stable":false,
+    "extra": {
         "laravel": {
             "providers": [
                 "Synergixe\\PHPBeamzer\\Providers\\Laravel\\BeamzerServiceProvider"
@@ -65,11 +64,8 @@
 	"aliases": {
             "Streamer": "Synergixe\\PHPBeamzer\\Facades\\Laravel\\Streamer"
         }
-  },
-  "scripts": {
-	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall",
-        "post-package-install": [
-            	"@php artisan vendor:publish --tag=config"
-        ]
-  }
+    },
+    "scripts": {
+	"pre-install-cmd": "Synergixe\\PHPBeamzer\\Commands\\Composer\\InstallSetup::preInstall"
+    }
 }
