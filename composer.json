@@ -21,7 +21,7 @@
     },
     "require-dev": {
            "mockery/mockery":"^1.0",
-           "orchestra/testbench":"^3.6|^3.7",
+           "orchestra/testbench":"^3.4",
            "phpunit/phpunit":"^7.0",
 	   "phpstan/phpstan":"0.9.*",
 	   "friendsofphp/php-cs-fixer": "^2.5"
@@ -36,7 +36,7 @@
 	  "illuminate/database":"^5.4",
           "igorw/event-source":"~1.0",
           "illuminate/console":"^5.4",
-          "symfony/http-foundation":"^3.3"
+          "symfony/http-foundation":"^3.3|^4.1"
   },
   "autoload": {
 	"psr-4": {
