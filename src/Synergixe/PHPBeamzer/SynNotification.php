@@ -39,6 +39,6 @@ class SynNotification extends DatabaseNotification {
               return null;
          }
      
-         return $this->data['verb'];
+         return $this->data['action'];
     }
 }
