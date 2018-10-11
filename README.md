@@ -275,9 +275,8 @@ php artisan migrate
 							$user = \Auth::user();
 							$followee = User::where('id', '=', $request->input('followee_id'));
 
-							$follow = $user->followings()->save([
-								'follower_id' => $user->id,
-								'followee_id' => $followee->id
+							$follow = $user->follows()->attach([
+								$followee->id
 							]);
 
 							$event = new NotificableEvent(
@@ -320,12 +319,21 @@ php artisan migrate
        					return $this->email_address;
     				}
 				
-				public function followings(){ // relation for all `followings`
+				public function follows(){ // relation for all `follows`
 				
 					return $this->belongsToMany(User::class,
 						    'social_network_follows',
-						    'followee_id', 'follower_id', 'id', 'id', 'followings'
+						    'followee_id', 'follower_id', 'id', 'id', 'follows'
 					)->withTimestamps();
+				}
+				
+				public function followers(){ // relation for all `followers`
+				
+					return $this->belongsToMany(User::class,
+						    'social_network_follows',
+						    'follower_id', 'followee_id', 'id', 'id', 'followers'
+					)->withTimestamps();
+				
 				}
 				
 				/* create the `makeDescription` method for trait { Describable } */
@@ -388,7 +396,7 @@ php artisan migrate
 								new ActivityStreamNotification(
 									$event->producer,
 									$event->reciever,
-									$event->timstamp,
+									$event->timestamp,
 									$event_kind
 								)
 							)->delay(
