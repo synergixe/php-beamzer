@@ -29,6 +29,6 @@ class CreateStreamNotificaitionTable extends Migration {
      */
     public function down(){
     
-        Schema::drop('synnotifications');
+        Schema::drop('stream_notifications');
     }
 }
