@@ -1,6 +1,10 @@
 # PHPBeamzer
 
-This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4, 5.5 and 5.6 only. 
+[![Latest Version](https://img.shields.io/github/release/synergixe/php-beamzer.svg?style=flat-rounded)](https://github.com/JoggApp/laravel-natural-language/releases)
+[![Build Status](https://travis-ci.org/synergixe/php-beamzer.svg?branch=master)](https://travis-ci.org/JoggApp/laravel-natural-language)
+[![Total Downloads](https://img.shields.io/packagist/dt/synergixe/php-beamzer.svg?style=flat-rounded&colorB=brightgreen)](https://packagist.org/packages/JoggApp/laravel-natural-language)
+
+This is a library that adds cross-browser support for real-time feeds and notifications to PHP web applications in an easy way (using Server-Sent Events (SSE) only). It currently supports **Laravel** version 5.4, 5.5, 5.6 and 5.7 only. 
 
 ## How to Use
 
@@ -22,36 +26,50 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 ### Publish the config for the package to the Laravel config folder
 
 ```bash
+php artisan vendor:publish --provider="Synergixe\Beamzer\Providers\Laravel\BeamzerServiceProvider"
+```
 
-		$ php artisan vendor:publish --tag=config
+## This will create the package's config file called `beamzer.php` in the `config` directory of your Laravel Project. These are the contents of the published config file:
 
+```php
+
+	return [
+	    /*
+	    |--------------------------------------------------------------------------
+	    | The id of project created in the Google Cloud Platform console.
+	    |--------------------------------------------------------------------------
+	    */
+	    'project_id' => env('NATURAL_LANGUAGE_PROJECT_ID', 'sample-12345'),
+
+	    /*
+	    |--------------------------------------------------------------------------
+	    | Path to the json file containing the authentication credentials.
+	    |--------------------------------------------------------------------------
+	    */
+	    'key_file_path' => base_path('composer.json'),
+	];
 ```
 
 ### Create the event listener to be used with the nofication custom event using the custom command provided by the package
 
 ```bash
-
-		$ php artisan create:notificationfile
-
+php artisan create:notificationfile
 ```
 
 ### Then create your Laravel Controllers
 
 ```bash
-
-		$ php artisan make:controller EventSourceController
+php artisan make:controller EventSourceController
 		
-		$ php artisan make:controller MessageController
+php artisan make:controller MessageController
 ```
 
 ### Create the Laravel Notifications Database Table
 
 ```bash
+php artisan notifications:table
 
-		$ php artisan notifications:table
-
-		$ php artisan migrate
-
+php artisan migrate
 ```
 
 ### Register the route for returning your stream notifications and for create notifications
@@ -66,7 +84,9 @@ This is a library that adds cross-browser support for real-time feeds and notifi
 	
 ```
 
-### Update the app config for service provider and alias classes
+### Update the app config for service provider and alias classes 
+
+> If you use Laravel 5.5 and above don't bother doing this as it is included automatically
 
 ```php
 
