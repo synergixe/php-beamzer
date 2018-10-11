@@ -11,11 +11,11 @@ class InstanceTest extends SynergixeTestCase {
      * @return void
      */
 
-    public function testInstanceIsCreated(){
+    public function test_instance_is_created(){
 
-	      $beamzer = Beamzer::createInstance(NULL, NULL);
+	      	$beamzer = Beamzer::createInstance(NULL, NULL);
 
-        $this->assertTrue(method_exists($beamzer, 'send'));
+        	$this->assertTrue(method_exists($beamzer, 'send'));
     }
 	
 }
