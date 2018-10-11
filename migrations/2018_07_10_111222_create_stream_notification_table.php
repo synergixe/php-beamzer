@@ -15,7 +15,7 @@ class CreateStreamNotificaitionTable extends Migration {
     
         Schema::create('stream_notifications', function (Blueprint $table){
             $table->('id');
-            $table->integer('user_id')->unsigned()->index();
+            $table->text('data');
             $table->string('type', 220);
             $table->datetime('read_at');
             $table->timestamps();
