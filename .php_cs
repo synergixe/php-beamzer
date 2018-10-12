@@ -50,7 +50,7 @@ return PhpCsFixer\Config::create()
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude('files')
+            ->exclude('bin')
             ->exclude('vendor')
             ->in(__DIR__)
             ->name('*.php')
