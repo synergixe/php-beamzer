@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.7
+ * @version v0.1.8
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -17,6 +17,7 @@ use Synergixe\PHPBeamzer\Beamzer as Beamzer;
 use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Synergixe\PHPBeamzer\Facades\Laravel\Streamer as Streamer;
+use Synergixe\PHPBeamzer\Commands\LaravelNotificationLoadCommand as LaravelNotificationLoadCommand;
 use Synergixe\PHPBeamzer\Commands\ComposeRedisServiceCommand as ComposeRedisServiceCommand;
 use Illuminate\Support\ServiceProvider;
 
