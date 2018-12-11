@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.7
+ * @version v0.1.8
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -37,4 +37,5 @@ class DBPushChannel {
 		    ]);
 	}
 }
+
 ?>
