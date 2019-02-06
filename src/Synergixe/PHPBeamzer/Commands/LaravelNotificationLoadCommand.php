@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
  *
- * @version v0.1.8
+ * @version v0.1.9
  *
  * @author Ifeora Okechukwu (https://twitter.com/isocroft)
  *
@@ -43,7 +43,7 @@ class LaravelNotificationLoadCommand extends Command {
 
 	public function handle(){
 
-		$this->call('make:listener', ['argument' => 'NotificableEventListener' ,  '--event' => '"Synergixe\PHPBeamzer\Events\NotificableEvent"');
+		$this->call('make:listener', ['argument' => 'NotificableEventListener' ,  '--event' => '"Synergixe\PHPBeamzer\Events\NotificableEvent"']);
 
 		$file = app_path('Providers/EventServiceProvider.php');
 
