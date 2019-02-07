@@ -5,7 +5,7 @@
 /*
  * @file 
  *
- * @copyright Copyright (c) 2018 Oparand Ltd - Synergixe
+ * @copyright Copyright (c) 2018 - 2019 Oparand Ltd - Synergixe
  *
  * @created 23/01/2018
  *
