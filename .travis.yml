@@ -33,5 +33,5 @@ before_script:
   - composer dumpautoload -o
    
 script:
-    - ./vendor/bin/php-cs-fixer fix ./
+    - ./vendor/bin/php-cs-fixer fix
     - phpunit
